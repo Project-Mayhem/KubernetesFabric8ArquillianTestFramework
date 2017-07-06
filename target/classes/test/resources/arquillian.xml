@@ -1,0 +1,44 @@
+ <arquillian xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xmlns="http://jboss.org/schema/arquillian"
+                xsi:schemaLocation="http://jboss.org/schema/arquillian
+                http://jboss.org/schema/arquillian/arquillian_1_0.xsd">
+
+        <extension qualifier="kubernetes">
+        <!--  The URL of the Kubernetes master; you can also specify this with the KUBERNETES_MASTER env var-->
+            <property name="masterUrl">true</property>
+            
+            <!--If a url hasn't been explicitly specified, the configFileName 
+            can be used for discovery of the configuration in the classpath  -->
+            <property name="configFileName"></property>
+            
+            <!--  The url to the kubernetes configuration to be tested. -->
+            <property name="configURl"></property>
+            
+            <!-- Whether or not an attempt is made to connect to a service port; failing 
+            the test if it can't be connected. This is disabled by default since its 
+            likely a service ClusterIP / port cannot be opened by the JUnit test case 
+            (and may require authentication) -->
+            <property name="connectToService"></property>
+            
+            <!-- A space separated list of directories, files or urls to kubernetes 
+            configurations that are required to be applied before the current one. -->
+            <property name="env.dependiences"></property>
+            
+            <!-- Wait until a network connection to all applied services is possible -->
+            <property name="waitForServiceConnection"></property>
+            
+            <!-- The connection timeout for each attempt to "connect to the service" -->
+            <property name="serviceConnectionTimeout"></property>
+            
+            <!-- Explicitly specify which services to wait. If this option is 
+            ommitted or empty all services will be waited. -->
+            <property name="waitForServices"></property>
+            
+            <!-- The total amount of time for to wait for pods and service to be ready. -->
+            <property name="timeout"></property>
+            
+            <!-- The interval between polling the status of pods and services. -->
+            <property name="pollInterval"></property>
+            
+        </extension>
+    </arquillian>
