@@ -1,44 +1,53 @@
- <arquillian xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                xmlns="http://jboss.org/schema/arquillian"
-                xsi:schemaLocation="http://jboss.org/schema/arquillian
-                http://jboss.org/schema/arquillian/arquillian_1_0.xsd">
+<arquillian xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://jboss.org/schema/arquillian"
+	xsi:schemaLocation="http://jboss.org/schema/arquillian
+               http://jboss.org/schema/arquillian/arquillian_1_0.xsd">
 
-        <extension qualifier="kubernetes">
-        <!--  The URL of the Kubernetes master; you can also specify this with the KUBERNETES_MASTER env var-->
-            <property name="masterUrl">true</property>
-            
-            <!--If a url hasn't been explicitly specified, the configFileName 
-            can be used for discovery of the configuration in the classpath  -->
-            <property name="configFileName"></property>
-            
-            <!--  The url to the kubernetes configuration to be tested. -->
-            <property name="configURl"></property>
-            
-            <!-- Whether or not an attempt is made to connect to a service port; failing 
-            the test if it can't be connected. This is disabled by default since its 
-            likely a service ClusterIP / port cannot be opened by the JUnit test case 
-            (and may require authentication) -->
-            <property name="connectToService"></property>
-            
-            <!-- A space separated list of directories, files or urls to kubernetes 
-            configurations that are required to be applied before the current one. -->
-            <property name="env.dependiences"></property>
-            
-            <!-- Wait until a network connection to all applied services is possible -->
-            <property name="waitForServiceConnection"></property>
-            
-            <!-- The connection timeout for each attempt to "connect to the service" -->
-            <property name="serviceConnectionTimeout"></property>
-            
-            <!-- Explicitly specify which services to wait. If this option is 
-            ommitted or empty all services will be waited. -->
-            <property name="waitForServices"></property>
-            
-            <!-- The total amount of time for to wait for pods and service to be ready. -->
-            <property name="timeout"></property>
-            
-            <!-- The interval between polling the status of pods and services. -->
-            <property name="pollInterval"></property>
-            
-        </extension>
-    </arquillian>
+	<!-- Any configuration option can be provided as an environment variable, 
+		system property or arquillian property. -->
+
+	<extension qualifier="kubernetes">
+		<!-- A space separated list of directories, files or urls to kubernetes 
+			configurations that are required to be applied before the current one. -->
+		<property name="env.dependencies">mvn:io.fabric8.ipaas.packages/messaging/${fabric8-ipaas.version}/json/kubernetes</property>
+		<!-- set this to 'true' to force the user to type 'Q' in the command line 
+			terminal to terminate the namespace -->
+		<property name="FABRIC8_NAMESPACE_CONFIRM_DESTROY">false</property>
+		<!-- The number of seconds to keep the namespace around, after the test 
+			suite, before destroying -->
+		<property name="FABRIC8_NAMESPACE_DESTROY_TIMEOUT"></property>
+		<!-- The url to the kubernetes master. You can obtain this by running 'kubectl 
+			cluster-info' -->
+		<property name="masterUrl">https://192.168.99.100:8443</property>
+
+		<!-- Specifying the Kubernetes master url via an environment variable here; 
+			optional -->
+		<property name="KUBERNETES_MASTER">https://192.168.99.100:8443</property>
+		<!-- If a url hasn't been explicitly specified, the configFileName can 
+			be used for discovery of the configuration in the classpath -->
+		<property name="configFileName"></property>
+		<!-- Allowing connections to Kubernetes without a client certificate -->
+		<property name="KUBERNETES_TRUST_CERTIFICATES">true</property>
+		<!-- Defining this environment variable to get a full stack trace - noisey 
+			but handy -->
+		<property name="FABRIC8_VERBOSE_ASSERT">true</property>
+		<!-- The url to the kubernetes configuration to be tested. -->
+		<property name="configUrl"></property>
+		<!-- Whether or not an attempt is made to connect to a service port; failing 
+			the test if it can't be connected. This is disabled by default since its 
+			likely a service ClusterIP / port cannot be opened by the JUnit test case 
+			(and may require authentication) -->
+		<property name="ConnectToServices"></property>
+		<!-- Wait until a network connection to all applied services is possible. -->
+		<property name="waitForServiceConnection"></property>
+		<!-- The connection timeout for each attempt to "connect to the service". -->
+		<property name="serviceConnectionTimeout"></property>
+		<!-- Explicitly specify which services to wait. If this option is ommitted 
+			or empty all services will be waited. -->
+		<property name="waitForServices"></property>
+		<!-- The total amount of time for to wait for pods and service to be ready. -->
+		<property name="timeout"></property>
+		<!-- The interval between polling the status of pods and services. -->
+		<property name="pollInterval"></property>
+	</extension>
+</arquillian>
