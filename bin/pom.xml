@@ -22,8 +22,6 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<arquillian-cube.version>1.6.0</arquillian-cube.version>
 		<jboss-arquillian-junit.version>1.1.13.Final</jboss-arquillian-junit.version>
-		<fabric.version>3.5.19</fabric.version>
-		<io.fabric8.version>2.3.3</io.fabric8.version>
 	</properties>
 
 	<build>
@@ -45,24 +43,16 @@
 		</plugins>
 	</build>
 
+
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
 				<groupId>org.arquillian.cube</groupId>
 				<artifactId>arquillian-cube-bom</artifactId>
 				<version>${arquillian-cube.version}</version>
-				<scope>import</scope>
-				<type>pom</type>
+					<scope>import</scope>
+					<type>pom</type>
 			</dependency>
-
-			<dependency>
-				<groupId>org.jboss.shrinkwrap.descriptors</groupId>
-				<artifactId>shrinkwrap-descriptors-bom</artifactId>
-				<version>2.0.0</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-
 		</dependencies>
 	</dependencyManagement>
 
@@ -73,16 +63,12 @@
 			<version>${jboss-arquillian-junit.version}</version>
 			<scope>test</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>io.fabric8</groupId>
 			<artifactId>fabric8-arquillian</artifactId>
-			<version>${io.fabric8.version}</version>
+			<version>2.3.0</version>
 			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>io.fabric8</groupId>
-			<artifactId>kubernetes-api</artifactId>
-			<version>${io.fabric8.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.arquillian.cube</groupId>
@@ -116,38 +102,11 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>io.fabric8</groupId>
-			<artifactId>jolokia-assertions</artifactId>
-			<version>2.3.3</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.assertj</groupId>
 			<artifactId>assertj-core</artifactId>
 			<version>3.8.0</version>
 			<scope>test</scope>
 		</dependency>
-
-		<dependency>
-			<groupId>org.jboss.arquillian.container</groupId>
-			<artifactId>arquillian-container-spi</artifactId>
-			<version>${jboss-arquillian-junit.version}</version>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.jboss.shrinkwrap.descriptors</groupId>
-			<artifactId>shrinkwrap-descriptors-depchain</artifactId>
-			<type>pom</type>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.jboss.shrinkwrap.descriptors</groupId>
-			<artifactId>shrinkwrap-descriptors-impl-javaee</artifactId>
-			<scope>test</scope>
-		</dependency>
-
 	</dependencies>
 
 </project>

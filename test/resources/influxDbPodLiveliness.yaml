@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Pod
+metadata:  
+  name: influxdblivelinesstest
+spec:  
+  containers:    
+    - image: influxdb      
+      name: asreinfluxdb      
+      livenessProbe:        
+          httpGet:          
+            path: /ping          
+            port: 8086        
+          initialDelaySeconds: 5        
+          timeoutSeconds: 1

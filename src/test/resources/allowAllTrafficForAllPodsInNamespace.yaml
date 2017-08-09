@@ -1,3 +1,6 @@
+# Creates a policy that explicitly allow all traffic for all pods in a Namespace; even if policies 
+# are added that cause some pods to be treated as “isolated”.
+
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:

@@ -1,4 +1,4 @@
-package main.test;
+package test.java;
 
 import io.fabric8.kubernetes.client.KubernetesClient;
 import org.jboss.arquillian.junit.Arquillian;
