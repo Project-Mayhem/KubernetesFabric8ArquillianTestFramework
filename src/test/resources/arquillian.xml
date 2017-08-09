@@ -3,6 +3,7 @@
 	xsi:schemaLocation="http://jboss.org/schema/arquillian
                http://jboss.org/schema/arquillian/arquillian_1_0.xsd">
 
+<<<<<<< HEAD
 
 
 	<extension qualifier="docker">
@@ -15,6 +16,8 @@
 	</extension>
 
 
+=======
+>>>>>>> c5475fab16b082b177561e2b8ee27882e2f3c1af
 	<!-- Any configuration option can be provided as an environment variable, 
 		system property or arquillian property. -->
 
@@ -30,7 +33,11 @@
 		<property name="FABRIC8_NAMESPACE_DESTROY_TIMEOUT"></property>
 		<!-- The url to the kubernetes master. You can obtain this by running 'kubectl 
 			cluster-info' -->
+<<<<<<< HEAD
 		<property name="masterUrl">true</property>
+=======
+		<property name="masterUrl">https://192.168.99.100:8443</property>
+>>>>>>> c5475fab16b082b177561e2b8ee27882e2f3c1af
 
 		<!-- Specifying the Kubernetes master url via an environment variable here; 
 			optional -->

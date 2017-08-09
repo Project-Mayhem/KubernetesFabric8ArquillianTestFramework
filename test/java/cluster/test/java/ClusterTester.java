@@ -1,5 +1,6 @@
 package cluster.test.java;
 
+<<<<<<< HEAD
 import static io.fabric8.kubernetes.assertions.Assertions.assertThat;
 
 import java.util.ArrayList;
@@ -30,6 +31,23 @@ import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.api.model.ServiceList;
 import io.fabric8.kubernetes.assertions.KubernetesAssert;
 import io.fabric8.kubernetes.client.KubernetesClient;
+=======
+import io.fabric8.kubernetes.client.KubernetesClient;
+import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.test.api.ArquillianResource;
+import io.fabric8.kubernetes.api.model.ServiceList;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import io.fabric8.kubernetes.api.model.Service;
+import static io.fabric8.kubernetes.assertions.Assertions.assertThat;
+
+import javax.inject.Named;
+
+import io.fabric8.kubernetes.api.model.ReplicationControllerList;
+import io.fabric8.kubernetes.api.model.ReplicationController;
+import io.fabric8.kubernetes.api.model.PodList;
+import io.fabric8.arquillian.kubernetes.Session;
+>>>>>>> c5475fab16b082b177561e2b8ee27882e2f3c1af
 
 @RunWith(Arquillian.class)
 public class ClusterTester {
@@ -37,6 +55,7 @@ public class ClusterTester {
 	// Obtaining a reference to the Kubernetes client
 	@ArquillianResource
 	KubernetesClient client;
+<<<<<<< HEAD
 	
 	KubernetesAssert kubeAssert = new KubernetesAssert(client);
 	
@@ -132,6 +151,8 @@ public class ClusterTester {
 		String podId = "", podNamespace = "", podName = "oraclelinux-573370123-2dhzk";
 		kubeAssert.pod(podName);
 	}
+=======
+>>>>>>> c5475fab16b082b177561e2b8ee27882e2f3c1af
 
 	/**
 	 * Asserts that at least one pod gets created, that it becomes Ready within a
@@ -151,7 +172,10 @@ public class ClusterTester {
 	 */
 	@ArquillianResource
 	Session session;
+<<<<<<< HEAD
 
+=======
+>>>>>>> c5475fab16b082b177561e2b8ee27882e2f3c1af
 	@Test
 	public void testAtLeastOnePod() throws Exception {
 		assertThat(client).pods().runningStatus().filterNamespace(session.getNamespace()).hasSize(1);
@@ -163,15 +187,22 @@ public class ClusterTester {
 	@ArquillianResource
 	ServiceList sessionServices;
 
+<<<<<<< HEAD
 	public void servicesAlive() throws Exception {
 		kubeAssert.services().hasToString("hello-minikube");
 	}
 
+=======
+>>>>>>> c5475fab16b082b177561e2b8ee27882e2f3c1af
 	/**
 	 * To obtain a record of a particular service that was created in the current
 	 * session.
 	 */
+<<<<<<< HEAD
 
+=======
+	
+>>>>>>> c5475fab16b082b177561e2b8ee27882e2f3c1af
 	@ArquillianResource
 	@Named("my-service")
 	Service myService;
@@ -189,7 +220,11 @@ public class ClusterTester {
 	 * current session:
 	 * 
 	 */
+<<<<<<< HEAD
 
+=======
+	
+>>>>>>> c5475fab16b082b177561e2b8ee27882e2f3c1af
 	@ArquillianResource
 	ReplicationController myController;
 
@@ -208,6 +243,7 @@ public class ClusterTester {
 	@ArquillianResource
 	Session mySession;
 
+<<<<<<< HEAD
 	
 	public static void main(String[] args)
 	{
@@ -218,4 +254,6 @@ public class ClusterTester {
 			e.printStackTrace();
 		}
 	}
+=======
+>>>>>>> c5475fab16b082b177561e2b8ee27882e2f3c1af
 }
