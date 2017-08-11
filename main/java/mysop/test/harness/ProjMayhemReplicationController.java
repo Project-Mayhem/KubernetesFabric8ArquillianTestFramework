@@ -1,5 +1,8 @@
 package mysop.test.harness;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.fabric8.kubernetes.api.model.ObjectMeta;
 import io.fabric8.kubernetes.api.model.ReplicationController;
 import io.fabric8.kubernetes.api.model.ReplicationControllerBuilder;
@@ -10,6 +13,11 @@ import io.fabric8.kubernetes.api.model.ReplicationControllerStatus;
  * This is a ProjMayham Kubernetes ReplicationController. It is immutable once
  * it is defined.
  * 
+ * Definition: A ReplicationController ensures that a specified number of pod
+ * replicas are running at any one time. In other words, a ReplicationController
+ * makes sure that a pod or a homogeneous set of pods is always up and
+ * available.
+ * 
  * @author asreitz
  *
  */
@@ -17,7 +25,8 @@ import io.fabric8.kubernetes.api.model.ReplicationControllerStatus;
 public class ProjMayhemReplicationController {
 
 	private ReplicationController repCntrl = null;
-	private String kubeKind = "ReplicationController";
+	private static final String kubeKind = "ReplicationController";
+	private static Logger LOG = LoggerFactory.getLogger(ProjMayhemReplicationController.class);
 
 	public ProjMayhemReplicationController() {
 		this.repCntrl = new ReplicationController();
@@ -56,6 +65,7 @@ public class ProjMayhemReplicationController {
 			repCntrl.setSpec(repSpec);
 		}
 	}
+
 	public void setRepCntrlSstatus(ReplicationControllerStatus status) {
 		if ((this.repCntrl.getStatus().equals(null)) && (!this.repCntrl.equals(null))) {
 			repCntrl.setStatus(status);
