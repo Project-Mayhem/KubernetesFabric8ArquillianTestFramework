@@ -28,11 +28,19 @@ import io.fabric8.kubernetes.api.model.ReplicationController;
 import io.fabric8.kubernetes.api.model.ReplicationControllerList;
 import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.api.model.ServiceList;
-import io.fabric8.kubernetes.assertions.KubernetesAssert;
 import io.fabric8.kubernetes.client.KubernetesClient;
+import io.fabric8.kubernetes.assertions.KubernetesAssert;
+import static org.junit.Assert.assertEquals; 
+import static org.junit.Assert.assertFalse; 
+import static org.junit.Assert.assertTrue; 
+
+import org.slf4j.Logger; 
+import org.slf4j.LoggerFactory; 
 
 @RunWith(Arquillian.class)
 public class ClusterTester {
+	
+	private static Logger LOG = LoggerFactory.getLogger(ClusterTester.class); 
 
 	// Obtaining a reference to the Kubernetes client
 	@ArquillianResource
@@ -45,9 +53,9 @@ public class ClusterTester {
 	 */
 	@Test public void testClientAlive() throws Exception
 	{
-		System.out.println("Here is the client's api version" + client.getApiVersion());
-		System.out.println("Here is the kube client's master url: " + client.getMasterUrl().toString());
-		System.out.println("Here is the kube's devault namespace " + client.getConfiguration().getNamespace());
+		LOG.debug("Here is the client's api version" + client.getApiVersion());
+		LOG.debug("Here is the kube client's master url: " + client.getMasterUrl().toString());
+		LOG.debug("Here is the kube's devault namespace " + client.getConfiguration().getNamespace());
 	}
 
 	/**

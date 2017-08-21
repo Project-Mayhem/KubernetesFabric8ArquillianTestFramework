@@ -1,7 +1,7 @@
 -------------------------------------------------------------------------------
 Test set: cluster.test.java.MYSOPClusterTest
 -------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 1.631 sec <<< FAILURE!
+Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 3.417 sec <<< FAILURE!
 cluster.test.java.MYSOPClusterTest  Time elapsed: 0 sec  <<< ERROR!
 java.lang.RuntimeException: Could not create new instance of class org.jboss.arquillian.test.impl.EventTestRunnerAdaptor
 	at org.jboss.arquillian.test.spi.SecurityActions.newInstance(SecurityActions.java:166)
