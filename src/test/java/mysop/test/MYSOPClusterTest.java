@@ -1,4 +1,4 @@
-package cluster.test.java;
+package mysop.test;
 
 
 import io.fabric8.kubernetes.client.KubernetesClient;

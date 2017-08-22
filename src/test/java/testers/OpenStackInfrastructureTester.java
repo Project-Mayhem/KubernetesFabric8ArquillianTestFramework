@@ -1,4 +1,4 @@
-package test.java;
+package testers;
 
 public class OpenStackInfrastructureTester {
 

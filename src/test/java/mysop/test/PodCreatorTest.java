@@ -7,26 +7,26 @@ package mysop.test;
  */
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import io.fabric8.kubernetes.api.model.ObjectMeta;
-import io.fabric8.kubernetes.api.model.Pod;
-import io.fabric8.kubernetes.api.model.PodList;
+
 import io.fabric8.arquillian.kubernetes.Session;
 import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.ContainerPort;
+import io.fabric8.kubernetes.api.model.ObjectMeta;
+import io.fabric8.kubernetes.api.model.Pod;
+import io.fabric8.kubernetes.api.model.PodList;
 import io.fabric8.kubernetes.api.model.PodSpec;
 import io.fabric8.kubernetes.api.model.ReplicationController;
 import io.fabric8.kubernetes.api.model.Service;
-import io.fabric8.kubernetes.assertions.KubernetesAssert;
 import io.fabric8.kubernetes.client.KubernetesClient;
-import mysop.test.harness.PodCreator;
-import static io.fabric8.kubernetes.assertions.Assertions.assertThat;
+//import mysop.test.harness.PodCreator;
 
 @RunWith(Arquillian.class)
 public class PodCreatorTest {
@@ -145,8 +145,8 @@ public class PodCreatorTest {
 		myPod.setMetadata(podMetadata);
 		myPod.setSpec(podSpec);
 		
-		PodCreator testPod = new PodCreator(myPod);
-		testPod.create();
+		//PodCreator testPod = new PodCreator(myPod);
+		//testPod.create();
 		
 		//Now did the Pod get created?
 

@@ -1,24 +1,20 @@
-package test.java;
+package testers;
 
-import io.fabric8.kubernetes.client.KubernetesClient;
+import static io.fabric8.kubernetes.assertions.Assertions.assertThat;
+
+import java.util.List;
+
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import io.fabric8.kubernetes.api.model.PodList;
+import io.fabric8.kubernetes.api.model.ReplicationController;
+import io.fabric8.kubernetes.api.model.ReplicationControllerList;
 import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.api.model.ServiceList;
-import io.fabric8.kubernetes.api.model.ReplicationControllerList;
-import io.fabric8.kubernetes.api.model.PodList;
-import io.fabric8.kubernetes.api.model.PodList.ApiVersion;
-import io.fabric8.kubernetes.api.model.ReplicationController;
-
-import static io.fabric8.kubernetes.assertions.Assertions.assertThat;
-import static io.fabric8.kubernetes.assertions.Conditions.hasLabel;
-import static io.fabric8.kubernetes.assertions.Conditions.hasName;
-import static io.fabric8.kubernetes.api.model.extensions.AbstractDeploymentConditionAssert.*;
-
-import java.util.List;
+import io.fabric8.kubernetes.client.KubernetesClient;
 
 @RunWith(Arquillian.class)
 public class PodTester {
@@ -89,8 +85,8 @@ public class PodTester {
 
 	@Test
 	public void validateApiVersionNotNull() throws Exception {
-		ApiVersion apiVersion = (client).pods().list().getApiVersion();
-		assert ApiVersion.valueOf(apiVersion.toString()) != null;
+		String apiVersion = (client).pods().list().getApiVersion();
+		assert String.valueOf(apiVersion.toString()) != null;
 	}
 
 }

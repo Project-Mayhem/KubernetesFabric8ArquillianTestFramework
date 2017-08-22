@@ -1,4 +1,4 @@
-package cluster.test.java;
+package testers;
 
 import static io.fabric8.kubernetes.assertions.Assertions.assertThat;
 
