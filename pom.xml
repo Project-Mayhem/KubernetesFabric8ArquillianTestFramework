@@ -23,7 +23,7 @@
 		<arquillian-cube.version>1.6.0</arquillian-cube.version>
 		<jboss-arquillian-junit.version>1.1.13.Final</jboss-arquillian-junit.version>
 		<fabric.version>3.5.19</fabric.version>
-		<io.fabric8.version>2.3.3</io.fabric8.version>
+		<io.fabric8.version>2.3.4</io.fabric8.version>
 	</properties>
 
 	<build>
@@ -71,13 +71,19 @@
 			<groupId>org.jboss.arquillian.junit</groupId>
 			<artifactId>arquillian-junit-container</artifactId>
 			<version>${jboss-arquillian-junit.version}</version>
-			<!--scope>test</scope-->
+			<!--scope>test</scope -->
+		</dependency>
+		<dependency>
+			<groupId>io.fabric8</groupId>
+			<artifactId>fabric8-arquillian</artifactId>
+			<version>2.2.216</version>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>io.fabric8</groupId>
 			<artifactId>fabric8-arquillian</artifactId>
 			<version>${io.fabric8.version}</version>
-			<!--scope>test</scope-->
+			<!--scope>test</scope -->
 		</dependency>
 		<dependency>
 			<groupId>io.fabric8</groupId>
@@ -87,12 +93,12 @@
 		<dependency>
 			<groupId>org.arquillian.cube</groupId>
 			<artifactId>arquillian-cube-docker</artifactId>
-			<!--scope>test</scope-->
+			<!--scope>test</scope -->
 		</dependency>
 		<dependency>
 			<groupId>org.arquillian.cube</groupId>
 			<artifactId>arquillian-cube-kubernetes-fabric8</artifactId>
-			<!--scope>test</scope-->
+			<!--scope>test</scope -->
 		</dependency>
 		<dependency>
 			<groupId>org.arquillian.cube</groupId>
