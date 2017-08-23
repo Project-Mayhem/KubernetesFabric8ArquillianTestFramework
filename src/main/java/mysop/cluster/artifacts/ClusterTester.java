@@ -20,10 +20,13 @@ import io.fabric8.kubernetes.client.KubernetesClient;
 
 public class ClusterTester {
 
+	//class Logger
 	private static Logger LOG = LoggerFactory.getLogger(ClusterTester.class);
-
 	// Obtaining a reference to the Kubernetes client
-	KubernetesClient kubeCon = KubernetesConnector.getKubeClient();
+	private KubernetesClient kubeCon = KubernetesConnector.getKubeClient();
+	//Default values
+	public String apiVersion = "1.0";
+	
 
 
 	public void testClientAlive() throws Exception {
@@ -68,15 +71,32 @@ public class ClusterTester {
 		PodSpec podSpec = new PodSpec();
 		podSpec.setContainers(podContainers);
 
-		ObjectMeta podMetadata = new ObjectMeta();
-		String testCreateNS = "asreitz-test-podcreation";
-		podMetadata.setName(testCreateNS);
-		podMetadata.setNamespace(testNS.getMetadata().getName());
-		podMetadata.setLabels(podLabels);
+		String myPodNSID = "asreitz-test-podcreation";
+		
+		//--Create POD Namespace 
+		//Now create the Namespace so that it can be used:
+		ProjMayhamNamespace myPodNS = new ProjMayhamNamespace(); 
+		
+		ObjectMeta myPodNSMetDat = new ObjectMeta();
+		myPodNSMetDat.setName(myPodNSID);
+		//creating labels for the namespace meta data
+		Map<String,String> nsMetaDataLabels = new HashMap<String,String>();
+		nsMetaDataLabels.put("test","podCreation");
+		nsMetaDataLabels.put("project", "myspo");
+		
+		myPodNSMetDat.setLabels(nsMetaDataLabels);
+	
+		myPodNSMetDat.setLabels(podLabels);
+		myPodNS.setMetaData(myPodNSMetDat);
+		kubeCon.namespaces().create(myPodNS);
+		LOG.debug("Created the namespace for the pod");
+		
+		
 
-		Pod testPod = new Pod();
+		//--Create POD
+		ProjMayhamPod testPod = new ProjMayhamPod();
 		testPod.setKind("Pod");
-		testPod.setMetadata(podMetadata);
+		testPod.setMetadata(myPodNSMetDat);
 		testPod.setSpec(podSpec);
 		testPod.setApiVersion(apiVersion);
 

@@ -86,12 +86,11 @@ public class ProjMayhamNamespace extends Namespace {
 	 * @return the namepsace apiVersion
 	 */
 
-	public String getApiVersion() {
+	public void setApiVersion(String apiVer) {
 		String apiVersion = null;
 		if ((!this.nasp.equals(null)) && (this.nasp.getApiVersion().equals(null))) {
-			apiVersion = this.nasp.getApiVersion();
+			this.nasp.setApiVersion(apiVer);
 		}
-		return apiVersion;
 	}
 
 	/**

@@ -50,6 +50,9 @@ public class PodCreatorTests {
 	// Obtaining a handle to this Kube's Pods:
 	@ArquillianResource
 	PodList sessionPods;
+	
+	@ArquillianResource
+	Pod pod;
 
 	@ArquillianResource
 	Session session;

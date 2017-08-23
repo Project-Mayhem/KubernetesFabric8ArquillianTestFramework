@@ -20,6 +20,7 @@ import io.fabric8.kubernetes.client.KubernetesClient;
 import mysop.cluster.artifacts.ProjMayhamNamespace;
 
 @RunWith(Arquillian.class)
+
 public class NamespaceTests {
 		
 	    private static Logger LOG = LoggerFactory.getLogger(NamespaceTests.class); 

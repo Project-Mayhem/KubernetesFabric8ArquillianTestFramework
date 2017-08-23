@@ -32,5 +32,8 @@ public class MYSOPClusterTest {
 	    @Test
 	    public void testAppProvisionsRunningPods() throws Exception {
 	        assertThat(client).deployments().pods().isPodReadyForPeriod();
+	        System.out.println(client.getConfiguration());
+	        
+	        
 	    }
 }
