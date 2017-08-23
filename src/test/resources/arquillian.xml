@@ -6,11 +6,12 @@
 
 
 	<extension qualifier="docker">
-		<property name="serverVersion">1.12.6</property>
-		<!--property name="serverUri">http://localhost:2376</property-->
-		<property name="serverUri">http://192.168.99.100:2376</property>
+		<property name="serverVersion">1.12.5</property>
+		<property name="serverUri">http://localhost:2375</property>
 		<property name="definitionFormat">CUBE</property>
-		<property name="dockerContainers"></property>
+		<property name="dockerContainers"> 
+
+      </property>
 	</extension>
 
 
@@ -29,7 +30,7 @@
 		<property name="FABRIC8_NAMESPACE_DESTROY_TIMEOUT"></property>
 		<!-- The url to the kubernetes master. You can obtain this by running 'kubectl 
 			cluster-info' -->
-		<property name="masterUrl">https://192.168.99.100:8443</property>
+		<property name="masterUrl">true</property>
 
 		<!-- Specifying the Kubernetes master url via an environment variable here; 
 			optional -->
