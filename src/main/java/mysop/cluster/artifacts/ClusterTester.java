@@ -86,7 +86,7 @@ public class ClusterTester {
 		
 		myPodNSMetDat.setLabels(nsMetaDataLabels);
 	
-		myPodNSMetDat.setLabels(podLabels);
+		//myPodNSMetDat.setLabels(podLabels);
 		myPodNS.setMetaData(myPodNSMetDat);
 		kubeCon.namespaces().create(myPodNS);
 		LOG.debug("Created the namespace for the pod");
