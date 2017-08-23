@@ -145,8 +145,8 @@ public class PodCreatorTest {
 		myPod.setMetadata(podMetadata);
 		myPod.setSpec(podSpec);
 		
-		PodCreator testPod = new PodCreator(myPod);
-		testPod.create();
+		//PodCreator testPod = new PodCreator(myPod);
+		//testPod.create();
 		
 		//Now did the Pod get created?
 
