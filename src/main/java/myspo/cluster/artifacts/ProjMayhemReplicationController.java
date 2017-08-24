@@ -1,4 +1,4 @@
-package mysop.cluster.artifacts;
+package myspo.cluster.artifacts;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

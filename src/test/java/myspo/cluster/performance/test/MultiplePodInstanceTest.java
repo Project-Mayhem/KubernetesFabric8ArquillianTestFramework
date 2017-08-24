@@ -1,4 +1,4 @@
-package mysop.cluster.performance.test;
+package myspo.cluster.performance.test;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

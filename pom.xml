@@ -82,6 +82,7 @@
 			<version>${lucene.version}</version>
 			<scope>test</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>org.elasticsearch.test</groupId>
 			<artifactId>framework</artifactId>
@@ -89,8 +90,26 @@
 			<scope>test</scope>
 		</dependency>
 
-		<!--dependency> <groupId>io.fabric8</groupId> <artifactId>fabric8-arquillian</artifactId> 
-			<version>2.2.216</version> <scope>test</scope> </dependency -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.8.0-alpha2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
+			<version>1.8.0-alpha2</version>
+			<!--scope>test</scope -->
+		</dependency>
+
+		<!-- Using java.util.logging as the underlying framework for slf4j -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-jdk14</artifactId>
+			<version>1.8.0-alpha2</version>
+		</dependency>
+
 		<dependency>
 			<groupId>io.fabric8</groupId>
 			<artifactId>fabric8-arquillian</artifactId>

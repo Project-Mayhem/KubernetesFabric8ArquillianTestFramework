@@ -1,4 +1,4 @@
-package mysop.cluster.artifacts;
+package myspo.cluster.artifacts;
 
 import io.fabric8.kubernetes.api.model.ObjectMeta;
 import io.fabric8.kubernetes.api.model.Service;

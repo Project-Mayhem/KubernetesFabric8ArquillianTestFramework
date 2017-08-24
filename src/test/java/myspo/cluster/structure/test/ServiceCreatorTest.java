@@ -1,4 +1,4 @@
-package mysop.cluster.structure.test;
+package myspo.cluster.structure.test;
 
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
@@ -10,13 +10,13 @@ import org.slf4j.LoggerFactory;
 import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.api.model.ServiceSpec;
 import io.fabric8.kubernetes.client.KubernetesClient;
-import mysop.cluster.artifacts.ProjMayhemService;
+import myspo.cluster.artifacts.ProjMayhemService;
 
 
 @RunWith(Arquillian.class)
 public class ServiceCreatorTest {
 	
-    private static Logger LOG = LoggerFactory.getLogger(PodCreatorTests.class); 
+    private static Logger srvLog = LoggerFactory.getLogger(ServiceCreatorTest.class); 
 
 	// Obtaining a reference to the Kubernetes client
 	@ArquillianResource

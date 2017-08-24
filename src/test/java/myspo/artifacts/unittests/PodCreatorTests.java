@@ -1,4 +1,4 @@
-package mysop.cluster.structure.test;
+package myspo.artifacts.unittests;
 
 /**
  * Testing the creation of Pods on the cluster.  Sets up a Pod with containers and tests it.
@@ -28,14 +28,14 @@ import io.fabric8.kubernetes.api.model.ReplicationController;
 import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.assertions.KubernetesAssert;
 import io.fabric8.kubernetes.client.KubernetesClient;
-import mysop.cluster.artifacts.ProjMayhamPod;
+import myspo.cluster.artifacts.ProjMayhamPod;
 import static io.fabric8.kubernetes.assertions.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import mysop.cluster.artifacts.ProjMayhamPod;
+import myspo.cluster.artifacts.ProjMayhamPod;
 
 @RunWith(Arquillian.class)
 

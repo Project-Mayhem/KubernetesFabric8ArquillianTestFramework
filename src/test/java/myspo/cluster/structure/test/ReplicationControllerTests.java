@@ -1,4 +1,4 @@
-package mysop.cluster.structure.test;
+package myspo.cluster.structure.test;
 
 public class ReplicationControllerTests {
 

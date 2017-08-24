@@ -1,4 +1,4 @@
-package mysop.cluster.artifacts;
+package myspo.cluster.artifacts;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,6 +12,7 @@ import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.ContainerPort;
 import io.fabric8.kubernetes.api.model.Namespace;
 import io.fabric8.kubernetes.api.model.NamespaceBuilder;
+import io.fabric8.kubernetes.api.model.NamespaceList;
 import io.fabric8.kubernetes.api.model.ObjectMeta;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.PodList;
@@ -20,19 +21,22 @@ import io.fabric8.kubernetes.client.KubernetesClient;
 
 public class ClusterTester {
 
-	//class Logger
-	private static Logger LOG = LoggerFactory.getLogger(ClusterTester.class);
+	// class Logger
+	private static final Logger LOG = LoggerFactory.getLogger(ClusterTester.class);
 	// Obtaining a reference to the Kubernetes client
 	private KubernetesClient kubeCon = KubernetesConnector.getKubeClient();
-	//Default values
+	// Default values
 	public String apiVersion = "1.0";
-	
-
 
 	public void testClientAlive() throws Exception {
-		LOG.debug("Here is the client's api version" + kubeCon.getApiVersion());
-		LOG.debug("Here is the kube client's master url: " + kubeCon.getMasterUrl().toString());
-		LOG.debug("Here is the kube's devault namespace " + kubeCon.getConfiguration().getNamespace());
+		LOG.info("Here is the client's api version" + kubeCon.getApiVersion());
+		LOG.info("Here is the kube client's master url: " + kubeCon.getMasterUrl().toString());
+		LOG.info("Here is the kube's devault namespace " + kubeCon.getConfiguration().getNamespace());
+		NamespaceList nslistObj = kubeCon.namespaces().list();
+		List<Namespace> nsList = nslistObj.getItems();
+		for (Namespace ns : nsList) {
+			LOG.info(ns.getMetadata().getName());
+		}
 	}
 
 	/**
@@ -40,17 +44,10 @@ public class ClusterTester {
 	 * 
 	 * @throws Exception
 	 */
-	public void PodCreation() throws Exception {
+	public void podCreation() throws Exception {
 
 		// Define required api version
 		String apiVersion = "v1";
-		// Create a Namespace:
-		Namespace testNS = new NamespaceBuilder().withNewMetadata().withName("anastasiatestnamespace")
-				.addToLabels("elasticsearch", "test").endMetadata().build();
-
-		Map<String, String> podLabels = new HashMap<String, String>();
-		podLabels.put("podType", "elasticsearch");
-		podLabels.put("podreason", "test");
 
 		List<Container> podContainers = new ArrayList<Container>();
 		Container elasticSearchContainer = new Container();
@@ -68,39 +65,57 @@ public class ClusterTester {
 		nginxContainer.setPorts(ngxContainerPorts);
 		podContainers.add(nginxContainer);
 
+		// -- POD SPEC
 		PodSpec podSpec = new PodSpec();
 		podSpec.setContainers(podContainers);
 
+		// --Create POD Namespace
+		ProjMayhamNamespace myPodNS = new ProjMayhamNamespace();
+
+		// Setting pods attributes
+		Map<String, String> podLabels = new HashMap<String, String>();
+		podLabels.put("podType", "elasticsearch");
+		podLabels.put("podreason", "test");
+		myPodNS.setApiVersion(apiVersion);
 		String myPodNSID = "asreitz-test-podcreation";
-		
-		//--Create POD Namespace 
-		//Now create the Namespace so that it can be used:
-		ProjMayhamNamespace myPodNS = new ProjMayhamNamespace(); 
-		
+
 		ObjectMeta myPodNSMetDat = new ObjectMeta();
 		myPodNSMetDat.setName(myPodNSID);
-		//creating labels for the namespace meta data
-		Map<String,String> nsMetaDataLabels = new HashMap<String,String>();
-		nsMetaDataLabels.put("test","podCreation");
-		nsMetaDataLabels.put("project", "myspo");
-		
-		myPodNSMetDat.setLabels(nsMetaDataLabels);
-	
-		//myPodNSMetDat.setLabels(podLabels);
-		myPodNS.setMetaData(myPodNSMetDat);
-		kubeCon.namespaces().create(myPodNS);
-		LOG.debug("Created the namespace for the pod");
-		
-		
 
-		//--Create POD
+		// creating labels for the namespace meta data
+		Map<String, String> nsMetaDataLabels = new HashMap<String, String>();
+		nsMetaDataLabels.put("test", "podCreation");
+		nsMetaDataLabels.put("project", "myspo");
+		nsMetaDataLabels.put("database", "elasticsearch");
+		nsMetaDataLabels.put("loadbalancer", "nginx");
+		myPodNSMetDat.setLabels(nsMetaDataLabels);
+		myPodNS.setMetaData(myPodNSMetDat);
+		myPodNS.createNamespace();
+
+		// Now for the POD
+		LOG.debug("Created the namespace for the pod");
+
+		this.LOG.debug("The {} namespace has {} # of labels ", myPodNS.getNamespace().getMetadata().getName(),
+				myPodNS.getNamespace().getMetadata().getLabels().size());
+
+		// --Create POD
+
 		ProjMayhamPod testPod = new ProjMayhamPod();
 		testPod.setKind("Pod");
 		testPod.setMetadata(myPodNSMetDat);
 		testPod.setSpec(podSpec);
 		testPod.setApiVersion(apiVersion);
 
-		kubeCon.pods().create(testPod);
+		// LOG.info(testPod.toString());
+
+		// Now, lets create the pod:
+		try {
+			testPod.create();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			LOG.error("Unable to create Pod due to: " + ex.getMessage());
+			LOG.info("Unable to create Pod due to: " + ex.getMessage());
+		}
 
 		// Log if the Pod got created:
 		PodList podList = kubeCon.pods().list();
@@ -115,10 +130,10 @@ public class ClusterTester {
 		ClusterTester tester = new ClusterTester();
 		try {
 			tester.testClientAlive();
-			tester.PodCreation();
+			tester.podCreation();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 	}
 }

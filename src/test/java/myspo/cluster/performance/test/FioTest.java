@@ -1,4 +1,4 @@
-package mysop.cluster.performance.test;
+package myspo.cluster.performance.test;
 
 /**
  * Creating a suit of test that will:
@@ -29,7 +29,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.fabric8.kubernetes.client.KubernetesClient;
-import mysop.cluster.structure.test.NamespaceTests;
 
 @RunWith(Arquillian.class)
 @RunAsClient
