@@ -1,5 +1,8 @@
 package myspo.cluster.artifacts;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 /**
  * This class creates a Kubernetes Pod.  Once the Pod is defined, it is immutable; and
  * the only access to the pod is through this class interface.
@@ -14,10 +17,13 @@ package myspo.cluster.artifacts;
  */
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.Namespace;
 import io.fabric8.kubernetes.api.model.ObjectMeta;
 import io.fabric8.kubernetes.api.model.Pod;
@@ -35,6 +41,7 @@ public class ProjMayhamPod extends Pod {
 	private static final long serialVersionUID = 1L;
 	private Pod thePod = null;
 	private static final String podKind = "Pod";
+	private String apiVer = "v1";
 	private static Logger podLog = LoggerFactory.getLogger(ProjMayhamPod.class);
 	public static KubernetesClient kubeCon = KubernetesConnector.getKubeClient();
 
@@ -62,6 +69,8 @@ public class ProjMayhamPod extends Pod {
 
 	public ProjMayhamPod() {
 		thePod = new Pod();
+		thePod.setApiVersion(apiVer);
+		thePod.setKind(podKind);
 	}
 
 	/**
@@ -72,8 +81,9 @@ public class ProjMayhamPod extends Pod {
 
 		if ((!(this.thePod == null)) && (!(this.thePod.getMetadata() == null))
 				&& (!(this.thePod.getMetadata().getName() == null))) {
+			podLog.info("Attempting to create pod ****");
 			if ((this.doesPodExists(thePod.getMetadata().getName())) == false) {
-				podLog.debug("Creating pod " + thePod.getMetadata().getName());
+				podLog.info("Creating pod " + thePod.getMetadata().getName());
 				kubeCon.pods().create(this.thePod);
 
 				List<Pod> pods = kubeCon.pods().list().getItems();
@@ -94,6 +104,7 @@ public class ProjMayhamPod extends Pod {
 	private boolean doesPodExists(String podName) {
 		boolean exists = false;
 		List<Pod> kubePods = kubeCon.pods().list().getItems();
+	//	kubePods.contains(thePod);
 
 		for (Pod pod : kubePods) {
 			podLog.info("{} pod", pod.getMetadata().getName());
@@ -160,16 +171,83 @@ public class ProjMayhamPod extends Pod {
 	 * Returning the view of all parts of the Pod:
 	 */
 	public String toString() {
+		
 		String allPodLabels = null;
+		String podPrint = null;
+		
+		if((thePod!=null) && (thePod.getMetadata()!=null) && thePod.getMetadata().getLabels()!= null) {
+			//pull the list into a string 
+			Set<Map.Entry<String, String>> labelNames = thePod.getMetadata().getLabels().entrySet();
+			for(Entry<String, String> item:labelNames)
+			{
+				allPodLabels += item.getKey() + ":"+ item.getValue();
+			}
+		}
+		System.out.println("The labels are: " + allPodLabels);
 
 		if (!(this.thePod == null)) {
-		//	Map<String, String> podLabels = thePod.getMetadata().getLabels();
-			//for (Map.Entry<String, String> entry : podLabels.entrySet()) {
-				//allPodLabels = allPodLabels + entry;
-			//}
+		podPrint= new String("Pod Name: " + thePod.getMetadata().getName() + "\nKind: " + podKind + "\nApi Version: "
+				+ thePod.getApiVersion() + "\nLabels: ");
 		}
-		return new String("Pod Name: " + thePod.getMetadata().getName() + "\nKind: " + podKind + "\nApi Version: "
-				+ thePod.getApiVersion() + "\nNamespace: " + thePod.getMetadata().getNamespace() + "\nLabels: "
-				+ allPodLabels);
+		return podPrint;
+	}
+	
+	public static void main(String args[]) {
+		ProjMayhamPod myPod = new ProjMayhamPod();
+		
+		String allPodLabels= null;
+		
+		//Create pod labels for the metadata
+		Map<String, String> myPodLabels = new HashMap<String, String>();
+		myPodLabels.put("test","myspo");
+		myPodLabels.put("developer","anastasia");
+		
+		
+		//create pod spec with containers
+		PodSpec myPodSpec = new PodSpec();
+		Container myPodCont1 = new Container();
+		myPodCont1.setImage("elasticsearch");
+		myPodCont1.setImagePullPolicy("IfNotPresent");
+		myPodCont1.setName("AnastasiaElasticsearch");
+		List<Container> cnList = new ArrayList<Container>();
+		cnList.add(myPodCont1);
+		myPodSpec.setContainers(cnList);
+		myPod.setPodSpec(myPodSpec);
+		
+		ObjectMeta myPodMetaData = new ObjectMeta();
+		myPodMetaData.setName("AnastaisaPod");
+		myPodMetaData.setNamespace("clusterTesterforPod");
+		myPodMetaData.setLabels(myPodLabels);
+		myPod.setMetadata(myPodMetaData);
+		
+		
+		
+		System.out.println("Pod Name: " + myPod.getMetadata().getName() );
+		System.out.println("Pod APIVersion: " + myPod.getApiVersion() );
+		System.out.println("Pod Kind: " + myPod.getKind());
+		
+		
+		if((myPod!=null) && (myPod.getMetadata()!=null) && myPod.getMetadata().getLabels()!= null) {
+			//pull the list into a string 
+			Collection<String> labelNames = myPod.getMetadata().getLabels().values();
+			
+			int count =1;
+			for(String item:labelNames)
+			{
+				if(count==1)
+				{
+					allPodLabels = item;
+					count+=1;
+				}else {
+				allPodLabels += item;
+				}
+			}
+			System.out.println("Pod labels: " + allPodLabels);
+		}
+		
+		System.out.println("Pod looks like this:  " + myPod.toString());
+		
+		
+		
 	}
 }

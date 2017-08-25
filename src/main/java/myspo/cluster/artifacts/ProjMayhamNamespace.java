@@ -166,7 +166,7 @@ public class ProjMayhamNamespace extends Namespace {
 	public static void main(String[] args) {
 		ProjMayhamNamespace myNS = new ProjMayhamNamespace();
 		ObjectMeta nsMD = new ObjectMeta();
-		nsMD.setName("testnamespace");
+		nsMD.setName("curtistestnamespace");
 
 		// adding labels:
 		Map<String, String> nsLabels = new HashMap<String, String>();
