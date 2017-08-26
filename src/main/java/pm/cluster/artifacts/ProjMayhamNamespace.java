@@ -1,4 +1,4 @@
-package myspo.cluster.artifacts;
+package pm.cluster.artifacts;
 
 import java.util.HashMap;
 import java.util.List;
@@ -29,7 +29,11 @@ import io.fabric8.kubernetes.client.KubernetesClientException;
 
 public class ProjMayhamNamespace extends Namespace {
 
-	private static Logger nspLog = LoggerFactory.getLogger(ProjMayhamNamespace.class);
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2259057698490908817L;
+	private static Logger log = LoggerFactory.getLogger(ProjMayhamNamespace.class);
 	private Namespace nasp = null;
 	public static final String kind = "Namespace";
 	private String apiVersion = "v1";
@@ -54,9 +58,9 @@ public class ProjMayhamNamespace extends Namespace {
 	 * @param naspStatus
 	 */
 	public ProjMayhamNamespace(String apiVer, ObjectMeta metadata, NamespaceSpec naspSpec, NamespaceStatus naspStatus) {
-		this.nasp = new Namespace(apiVer, this.kind, metadata, naspSpec, naspStatus);
+		this.nasp = new Namespace(apiVer, kind, metadata, naspSpec, naspStatus);
 
-		nspLog.debug("received the follwing for this namespace: \napiVersion:" + apiVer + "\nMetaData: " + metadata
+		log.debug("received the follwing for this namespace: \napiVersion:" + apiVer + "\nMetaData: " + metadata
 				+ "\namepsapce Spec" + naspSpec.toString() + "\nNamespace status" + naspStatus.getPhase());
 	}
 
@@ -78,10 +82,10 @@ public class ProjMayhamNamespace extends Namespace {
 		boolean created = false;
 		if ((nasp.getMetadata() != null) & (nasp.getMetadata().getName() != null)) {
 			
-			nspLog.info((Boolean.toString(this.doesNamespaceExists(nasp.getMetadata().getName()))));
+			log.info((Boolean.toString(this.doesNamespaceExists(nasp.getMetadata().getName()))));
 			if ((this.doesNamespaceExists(nasp.getMetadata().getName())) == false) {
 
-				nspLog.debug("Creating namespace " + nasp.getMetadata().getName());
+				log.debug("Creating namespace " + nasp.getMetadata().getName());
 				kubeCon.namespaces().create(this.nasp);
 
 				// verify the creation of this namespace:
@@ -89,7 +93,7 @@ public class ProjMayhamNamespace extends Namespace {
 
 				if (kubeNamespaces.contains(nasp)) {
 					created = true;
-					this.nspLog.info("Created {} namespace in {} kube cluster", nasp.getMetadata().getName(),
+					log.info("Created {} namespace in {} kube cluster", nasp.getMetadata().getName(),
 							kubeCon.getConfiguration().getMasterUrl());
 				}
 			}
@@ -110,10 +114,10 @@ public class ProjMayhamNamespace extends Namespace {
 		List<Namespace> kubeNamespaces = kubeCon.namespaces().list().getItems();
 
 		for (Namespace nsr : kubeNamespaces) {
-			nspLog.info("{} namespace", nsr.getMetadata().getName());
+			log.info("{} namespace", nsr.getMetadata().getName());
 			if (nsr.getMetadata().getName().equalsIgnoreCase(ns)) {
 				exists = true;
-				this.nspLog.info("{} namespace already exists; no creation needed.", ns);
+				log.info("{} namespace already exists; no creation needed.", ns);
 			}
 		}
 		return exists;
@@ -126,7 +130,7 @@ public class ProjMayhamNamespace extends Namespace {
 	 */
 	public void setMetaData(ObjectMeta metaData) {
 		if ((!(this.nasp == null)) && (this.nasp.getMetadata() == null)) {
-			this.nspLog.info("Setting the {} metadata: ", metaData.getName());
+			log.info("Setting the {} metadata: ", metaData.getName());
 			this.nasp.setMetadata(metaData);
 		}
 	}
@@ -139,7 +143,7 @@ public class ProjMayhamNamespace extends Namespace {
 	public void setNSSpec(NamespaceSpec spec) {
 		if ((!(this.nasp == null)) && (this.nasp.getSpec() == null)) {
 			this.nasp.setSpec(spec);
-			this.nspLog.info("Set namespace spec");
+			log.info("Set namespace spec");
 		}
 	}
 
@@ -152,7 +156,7 @@ public class ProjMayhamNamespace extends Namespace {
 	public void setNSStatus(NamespaceStatus status) {
 		if ((!(this.nasp == null)) && (this.nasp.getStatus() == null)) {
 			this.nasp.setStatus(status);
-			this.nspLog.info("Set namespace status");
+			log.info("Set namespace status");
 		}
 	}
 

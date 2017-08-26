@@ -1,4 +1,4 @@
-package myspo.cluster.structure.test;
+package pm.cluster.structure.test;
 
 
 import io.fabric8.kubernetes.client.KubernetesClient;

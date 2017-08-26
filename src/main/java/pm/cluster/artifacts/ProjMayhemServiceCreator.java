@@ -1,4 +1,4 @@
-package myspo.cluster.artifacts;
+package pm.cluster.artifacts;
 
 import io.fabric8.kubernetes.api.model.ObjectMeta;
 import io.fabric8.kubernetes.api.model.Service;

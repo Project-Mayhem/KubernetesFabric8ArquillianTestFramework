@@ -1,4 +1,4 @@
-package myspo.cluster.performance.test;
+package pm.cluster.performance.test;
 
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.runner.RunWith;

@@ -1,4 +1,4 @@
-package myspo.artifacts.unittests;
+package pm.artifacts.unittests;
 
 
 import static org.junit.Assert.assertTrue;
@@ -13,7 +13,8 @@ import org.slf4j.LoggerFactory;
 import io.fabric8.kubernetes.api.model.Namespace;
 import io.fabric8.kubernetes.api.model.ObjectMeta;
 import io.fabric8.kubernetes.client.KubernetesClient;
-import myspo.cluster.artifacts.ProjMayhamNamespace;
+import pm.cluster.artifacts.ProjMayhamNamespace;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(Arquillian.class)

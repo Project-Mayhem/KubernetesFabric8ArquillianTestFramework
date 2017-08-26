@@ -1,4 +1,4 @@
-package myspo.cluster.artifacts;
+package pm.cluster.artifacts;
 
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;

@@ -1,4 +1,4 @@
-package myspo.cluster.performance.test;
+package pm.cluster.performance.test;
 
 /**
  * Creating a suit of test that will:

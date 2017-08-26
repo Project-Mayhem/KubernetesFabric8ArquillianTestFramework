@@ -1,4 +1,4 @@
-package myspo.cluster.artifacts;
+package pm.cluster.artifacts;
 
 import io.fabric8.kubernetes.client.Config;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;

@@ -1,4 +1,4 @@
-package myspo.cluster.artifacts;
+package pm.cluster.artifacts;
 
 import java.util.ArrayList;
 import java.util.HashMap;

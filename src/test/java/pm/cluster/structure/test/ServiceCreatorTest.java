@@ -1,4 +1,4 @@
-package myspo.cluster.structure.test;
+package pm.cluster.structure.test;
 
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.api.model.ServiceSpec;
 import io.fabric8.kubernetes.client.KubernetesClient;
-import myspo.cluster.artifacts.ProjMayhemService;
+import pm.cluster.artifacts.ProjMayhemService;
 
 
 @RunWith(Arquillian.class)
