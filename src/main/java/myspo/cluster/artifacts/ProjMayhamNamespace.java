@@ -1,4 +1,8 @@
-package mysop.cluster.artifacts;
+package myspo.cluster.artifacts;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This class provides the ability to create a namespace; kubernetes virtual
@@ -28,6 +32,7 @@ public class ProjMayhamNamespace extends Namespace {
 	private static Logger nspLog = LoggerFactory.getLogger(ProjMayhamNamespace.class);
 	private Namespace nasp = null;
 	public static final String kind = "Namespace";
+	private String apiVersion = "v1";
 	KubernetesClient kubeCon = KubernetesConnector.getKubeClient();
 
 	/**
@@ -36,6 +41,8 @@ public class ProjMayhamNamespace extends Namespace {
 	 */
 	public ProjMayhamNamespace() {
 		this.nasp = new Namespace();
+		this.nasp.setApiVersion(this.apiVersion);
+		this.nasp.setKind(kind);
 	}
 
 	/**
@@ -48,6 +55,7 @@ public class ProjMayhamNamespace extends Namespace {
 	 */
 	public ProjMayhamNamespace(String apiVer, ObjectMeta metadata, NamespaceSpec naspSpec, NamespaceStatus naspStatus) {
 		this.nasp = new Namespace(apiVer, this.kind, metadata, naspSpec, naspStatus);
+
 		nspLog.debug("received the follwing for this namespace: \napiVersion:" + apiVer + "\nMetaData: " + metadata
 				+ "\namepsapce Spec" + naspSpec.toString() + "\nNamespace status" + naspStatus.getPhase());
 	}
@@ -68,44 +76,47 @@ public class ProjMayhamNamespace extends Namespace {
 	 */
 	public boolean createNamespace() throws KubernetesClientException {
 		boolean created = false;
-		if (!this.nasp.equals(null) && !this.nasp.getApiVersion().equalsIgnoreCase(null)
-				&& !this.nasp.getMetadata().equals(null) && !this.nasp.getSpec().equals(null)
-				&& !this.nasp.getStatus().equals(null)) {
-			nspLog.debug("Creating namespace " + nasp.getMetadata().getName());
-			kubeCon.namespaces().create(this.nasp);
-			if (kubeCon.getNamespace().equalsIgnoreCase(this.nasp.getMetadata().getName())) {
-				created = true;
+		if ((nasp.getMetadata() != null) & (nasp.getMetadata().getName() != null)) {
+			
+			nspLog.info((Boolean.toString(this.doesNamespaceExists(nasp.getMetadata().getName()))));
+			if ((this.doesNamespaceExists(nasp.getMetadata().getName())) == false) {
+
+				nspLog.debug("Creating namespace " + nasp.getMetadata().getName());
+				kubeCon.namespaces().create(this.nasp);
+
+				// verify the creation of this namespace:
+				List<Namespace> kubeNamespaces = kubeCon.namespaces().list().getItems();
+
+				if (kubeNamespaces.contains(nasp)) {
+					created = true;
+					this.nspLog.info("Created {} namespace in {} kube cluster", nasp.getMetadata().getName(),
+							kubeCon.getConfiguration().getMasterUrl());
+				}
 			}
 		}
 		return created;
 	}
 
 	/**
-	 * Retrieves this namespace apiVersion.
+	 * Check to see if the namespace that is being requested for creation already
+	 * exists.
 	 * 
-	 * @return the namepsace apiVersion
-	 */
-
-	public String getApiVersion() {
-		String apiVersion = null;
-		if ((!this.nasp.equals(null)) && (this.nasp.getApiVersion().equals(null))) {
-			apiVersion = this.nasp.getApiVersion();
-		}
-		return apiVersion;
-	}
-
-	/**
-	 * Retrieves this namespace Object metadata; allowing the client to set metadata
-	 * information.
-	 * 
+	 * @param ns
 	 * @return
 	 */
-	public ObjectMeta getObjectMetadata() {
-		ObjectMeta obm = null;
-		if ((!this.nasp.equals(null)) && (!this.nasp.getMetadata().equals(null))) {
-			obm = this.nasp.getMetadata();
+	private boolean doesNamespaceExists(String ns) {
+		boolean exists = false;
+
+		List<Namespace> kubeNamespaces = kubeCon.namespaces().list().getItems();
+
+		for (Namespace nsr : kubeNamespaces) {
+			nspLog.info("{} namespace", nsr.getMetadata().getName());
+			if (nsr.getMetadata().getName().equalsIgnoreCase(ns)) {
+				exists = true;
+				this.nspLog.info("{} namespace already exists; no creation needed.", ns);
+			}
 		}
-		return obm;
+		return exists;
 	}
 
 	/**
@@ -114,7 +125,8 @@ public class ProjMayhamNamespace extends Namespace {
 	 * @param metaData
 	 */
 	public void setMetaData(ObjectMeta metaData) {
-		if ((!this.nasp.equals(null)) && (this.nasp.getMetadata().equals(null))) {
+		if ((!(this.nasp == null)) && (this.nasp.getMetadata() == null)) {
+			this.nspLog.info("Setting the {} metadata: ", metaData.getName());
 			this.nasp.setMetadata(metaData);
 		}
 	}
@@ -125,8 +137,9 @@ public class ProjMayhamNamespace extends Namespace {
 	 * @param spec
 	 */
 	public void setNSSpec(NamespaceSpec spec) {
-		if ((!this.nasp.equals(null)) && (this.nasp.getSpec().equals(null))) {
+		if ((!(this.nasp == null)) && (this.nasp.getSpec() == null)) {
 			this.nasp.setSpec(spec);
+			this.nspLog.info("Set namespace spec");
 		}
 	}
 
@@ -137,8 +150,30 @@ public class ProjMayhamNamespace extends Namespace {
 	 *            - The status of the namespace.
 	 */
 	public void setNSStatus(NamespaceStatus status) {
-		if ((!this.nasp.equals(null)) && (this.nasp.getStatus().equals(null))) {
+		if ((!(this.nasp == null)) && (this.nasp.getStatus() == null)) {
 			this.nasp.setStatus(status);
+			this.nspLog.info("Set namespace status");
 		}
+	}
+
+	/**
+	 * providing access to the namespace
+	 */
+	public Namespace getNamespace() {
+		return this.nasp;
+	}
+
+	public static void main(String[] args) {
+		ProjMayhamNamespace myNS = new ProjMayhamNamespace();
+		ObjectMeta nsMD = new ObjectMeta();
+		nsMD.setName("curtistestnamespace");
+
+		// adding labels:
+		Map<String, String> nsLabels = new HashMap<String, String>();
+		nsLabels.put("nsType", "elasticsearch");
+		nsLabels.put("nsreason", "test");
+		nsMD.setLabels(nsLabels);
+		myNS.setMetaData(nsMD);
+		myNS.createNamespace();
 	}
 }

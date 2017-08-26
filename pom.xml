@@ -24,6 +24,8 @@
 		<jboss-arquillian-junit.version>1.1.13.Final</jboss-arquillian-junit.version>
 		<fabric.version>3.5.19</fabric.version>
 		<io.fabric8.version>2.3.4</io.fabric8.version>
+		<lucene.version>6.6.0</lucene.version>
+		<elasticsearch.version>5.5.0</elasticsearch.version>
 	</properties>
 
 	<build>
@@ -71,14 +73,43 @@
 			<groupId>org.jboss.arquillian.junit</groupId>
 			<artifactId>arquillian-junit-container</artifactId>
 			<version>${jboss-arquillian-junit.version}</version>
-			<!--scope>test</scope -->
-		</dependency>
-		<dependency>
-			<groupId>io.fabric8</groupId>
-			<artifactId>fabric8-arquillian</artifactId>
-			<version>2.2.216</version>
 			<scope>test</scope>
 		</dependency>
+
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-test-framework</artifactId>
+			<version>${lucene.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.elasticsearch.test</groupId>
+			<artifactId>framework</artifactId>
+			<version>${elasticsearch.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.8.0-alpha2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
+			<version>1.8.0-alpha2</version>
+			<!--scope>test</scope -->
+		</dependency>
+
+		<!-- Using java.util.logging as the underlying framework for slf4j -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-jdk14</artifactId>
+			<version>1.8.0-alpha2</version>
+		</dependency>
+
 		<dependency>
 			<groupId>io.fabric8</groupId>
 			<artifactId>fabric8-arquillian</artifactId>
@@ -152,6 +183,12 @@
 			<groupId>org.jboss.shrinkwrap.descriptors</groupId>
 			<artifactId>shrinkwrap-descriptors-impl-javaee</artifactId>
 			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.elasticsearch.client</groupId>
+			<artifactId>transport</artifactId>
+			<version>5.5.2</version>
 		</dependency>
 
 	</dependencies>

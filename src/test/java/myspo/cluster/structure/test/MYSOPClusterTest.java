@@ -1,4 +1,4 @@
-package mysop.cluster.structure.test;
+package myspo.cluster.structure.test;
 
 
 import io.fabric8.kubernetes.client.KubernetesClient;
@@ -32,5 +32,8 @@ public class MYSOPClusterTest {
 	    @Test
 	    public void testAppProvisionsRunningPods() throws Exception {
 	        assertThat(client).deployments().pods().isPodReadyForPeriod();
+	        System.out.println(client.getConfiguration());
+	        
+	        
 	    }
 }
