@@ -35,6 +35,29 @@ import io.fabric8.kubernetes.client.KubernetesClient;
 /**
  * Assuming this is actually running from within a namespace in a pod in a k8s cluster
  * @author curtisbates
+ * 
+ * Docker Image: datawiseio/fio:v0.3
+ * If using this image, the following start.sh script executes as image entrypoint.  Notice the
+ * variable injection from supplied environment varibales...
+ * 
+ * #!/bin/bash
+
+export FIO_JOB_FILE=${FIO_JOB_FILE:-/config/job.fio}
+export JOB_NAME=${JOB_NAME:-fio}
+export NJ=${NJ:-8}
+export QD=${QD:-16}
+export BLOCK_SIZE=${BLOCK_SIZE:-4k}
+export DEV=${DEV:-/data/testfile}
+export DIRECT=${DIRECT:-1}
+export SIZE=${SIZE:-5g}
+export RW=${RW:-read}
+export RT=${RT:-300}
+export STATUS_INTERVAL=${STATUS_INTERVAL:-30}
+export STATUS_FILE=${STATUS_FILE:-/data/${JOB_NAME}.out}
+
+exec /usr/bin/fio $FIO_JOB_FILE --status-interval ${STATUS_INTERVAL} --output ${STATUS_FILE}
+
+ * 
  *
  */
 public class FioTest {
