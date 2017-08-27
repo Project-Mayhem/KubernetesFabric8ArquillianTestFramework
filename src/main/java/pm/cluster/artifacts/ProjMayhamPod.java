@@ -24,10 +24,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.fabric8.kubernetes.api.model.Container;
-import io.fabric8.kubernetes.api.model.Namespace;
 import io.fabric8.kubernetes.api.model.ObjectMeta;
 import io.fabric8.kubernetes.api.model.Pod;
-import io.fabric8.kubernetes.api.model.PodList;
 import io.fabric8.kubernetes.api.model.PodSpec;
 import io.fabric8.kubernetes.api.model.PodStatus;
 import io.fabric8.kubernetes.client.KubernetesClient;
@@ -39,10 +37,10 @@ public class ProjMayhamPod extends Pod {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private Pod thePod = null;
+	//private Pod this = null;
 	private static final String podKind = "Pod";
 	private String apiVer = "v1";
-	private static Logger podLog = LoggerFactory.getLogger(ProjMayhamPod.class);
+	private static Logger log = LoggerFactory.getLogger(ProjMayhamPod.class);
 	public static KubernetesClient kubeCon = KubernetesConnector.getKubeClient();
 
 	/**
@@ -54,23 +52,29 @@ public class ProjMayhamPod extends Pod {
 	 * @param status
 	 */
 	public ProjMayhamPod(String apiVersion, ObjectMeta metadata, PodSpec spec, PodStatus status) {
-		this.thePod = new Pod();
-		this.thePod.setApiVersion(apiVersion);
-		this.thePod.setKind(podKind);
-		this.thePod.setMetadata(metadata);
-		this.thePod.setSpec(spec);
-		this.thePod.setStatus(status);
+		/*this = new Pod();
+		this.setApiVersion(apiVersion);
+		this.setKind(podKind);
+		this.setMetadata(metadata);
+		this.setSpec(spec);
+		this.setStatus(status);
+		*/
+		super(apiVersion,podKind,metadata,spec,status);
 	}
 
-	public ProjMayhamPod(Pod myPod) {
-		thePod = myPod;
-
-	}
+	/*public ProjMayhamPod(Pod myPod) {
+		//this = myPod;
+		super();
+		super.set
+	}*/
 
 	public ProjMayhamPod() {
-		thePod = new Pod();
-		thePod.setApiVersion(apiVer);
-		thePod.setKind(podKind);
+		super();
+		//this = new Pod();
+		super.setKind(podKind);
+		super.setApiVersion(apiVer);
+		//this.setApiVersion(apiVer);
+		//this.setKind(podKind);
 	}
 
 	/**
@@ -79,18 +83,19 @@ public class ProjMayhamPod extends Pod {
 	public boolean create() throws KubernetesClientException {
 		boolean created = false;
 
-		if ((!(this.thePod == null)) && (!(this.thePod.getMetadata() == null))
-				&& (!(this.thePod.getMetadata().getName() == null))) {
-			podLog.info("Attempting to create pod ****");
-			if ((this.doesPodExists(thePod.getMetadata().getName())) == false) {
-				podLog.info("Creating pod " + thePod.getMetadata().getName());
-				kubeCon.pods().create(this.thePod);
+		if (!(this.getMetadata() == null)
+				&& (!(this.getMetadata().getName() == null))) {
+			log.info("Attempting to create pod ****");
+			if ((this.doesPodExists(this.getMetadata().getName())) == false) {
+				log.info("Creating pod " + this.getMetadata().getName());
+				kubeCon.pods().create(this);
+				
 
 				List<Pod> pods = kubeCon.pods().list().getItems();
 				for (Pod pod : pods) {
-					if (pod.getMetadata().getName().equalsIgnoreCase(thePod.getMetadata().getName())) {
+					if (pod.getMetadata().getName().equalsIgnoreCase(this.getMetadata().getName())) {
 						created = true;
-						this.podLog.info("{} pod got created", this.thePod.getMetadata().getName());
+						log.info("{} pod got created", this.getMetadata().getName());
 					}
 				}
 			}
@@ -104,13 +109,13 @@ public class ProjMayhamPod extends Pod {
 	private boolean doesPodExists(String podName) {
 		boolean exists = false;
 		List<Pod> kubePods = kubeCon.pods().list().getItems();
-	//	kubePods.contains(thePod);
+	//	kubePods.contains(this);
 
 		for (Pod pod : kubePods) {
-			podLog.info("{} pod", pod.getMetadata().getName());
+			log.info("{} pod", pod.getMetadata().getName());
 			if (pod.getMetadata().getName().equalsIgnoreCase(podName)) {
 				exists = true;
-				this.podLog.info("The \"{}\" pod already exists; no creation needed.", podName);
+				this.log.info("The \"{}\" pod already exists; no creation needed.", podName);
 			}
 		}
 
@@ -121,51 +126,52 @@ public class ProjMayhamPod extends Pod {
 	 * The client can only set the Pod's apiVersion if it isn't already set.
 	 * 
 	 * @param apiVersion
-	 */
+	 *
 	public void setPodApiVersion(String apiVersion) {
-		if ((thePod.getApiVersion() == null) && (!(this.thePod == null))) {
-			thePod.setApiVersion(apiVersion);
+		if ((this.getApiVersion() == null) && (!(this == null))) {
+			this.setApiVersion(apiVersion);
 		}
-	}
+	}*/
 
 	/**
 	 * The client can only set the Pod's metadata if it isn't already set.
 	 * 
 	 * @param metadata
-	 */
+	 *
 
 	public void setPodMetadata(ObjectMeta metadata) {
-		if ((thePod.getMetadata() == null) && (!(this.thePod == null))) {
-			thePod.setMetadata(metadata);
+		if ((this.getMetadata() == null) && (!(this == null))) {
+			this.setMetadata(metadata);
 		}
-	}
+	}*/
 
 	/**
 	 * The client can only set the Pod's spec if it isn't already set.
 	 * 
 	 * @param spec
-	 */
+	 *
 	public void setPodSpec(PodSpec spec) {
-		if ((thePod.getSpec() == null) && (!(this.thePod == null))) {
-			thePod.setSpec(spec);
+		if ((this.getSpec() == null) && (!(this == null))) {
+			//this.setSpec(spec);
+			super.setSpec(spec);
 		}
-	}
+	}*/
 
-	public void setPodStatus(PodStatus status) {
-		if ((thePod.getStatus() == null) && (!(this.thePod == null))) {
-			thePod.setStatus(status);
+	/*public void setPodStatus(PodStatus status) {
+		if ((this.getStatus() == null) && (!(this == null))) {
+			this.setStatus(status);
 		}
-	}
+	}*/
 
 	/**
 	 * Providing access to the pod.
 	 * 
 	 * @return
-	 */
+	 *
 
 	public Pod getPod() {
-		return this.thePod;
-	}
+		return this.getPod();
+	}*/
 
 	/**
 	 * Returning the view of all parts of the Pod:
@@ -175,9 +181,9 @@ public class ProjMayhamPod extends Pod {
 		String allPodLabels = null;
 		String podPrint = null;
 		
-		if((thePod!=null) && (thePod.getMetadata()!=null) && thePod.getMetadata().getLabels()!= null) {
+		if((this!=null) && (this.getMetadata()!=null) && this.getMetadata().getLabels()!= null) {
 			//pull the list into a string 
-			Set<Map.Entry<String, String>> labelNames = thePod.getMetadata().getLabels().entrySet();
+			Set<Map.Entry<String, String>> labelNames = this.getMetadata().getLabels().entrySet();
 			for(Entry<String, String> item:labelNames)
 			{
 				allPodLabels += item.getKey() + ":"+ item.getValue();
@@ -185,9 +191,9 @@ public class ProjMayhamPod extends Pod {
 		}
 		System.out.println("The labels are: " + allPodLabels);
 
-		if (!(this.thePod == null)) {
-		podPrint= new String("Pod Name: " + thePod.getMetadata().getName() + "\nKind: " + podKind + "\nApi Version: "
-				+ thePod.getApiVersion() + "\nLabels: ");
+		if (!(this == null)) {
+		podPrint= new String("Pod Name: " + this.getMetadata().getName() + "\nKind: " + podKind + "\nApi Version: "
+				+ this.getApiVersion() + "\nLabels: ");
 		}
 		return podPrint;
 	}
@@ -212,7 +218,7 @@ public class ProjMayhamPod extends Pod {
 		List<Container> cnList = new ArrayList<Container>();
 		cnList.add(myPodCont1);
 		myPodSpec.setContainers(cnList);
-		myPod.setPodSpec(myPodSpec);
+		myPod.setSpec(myPodSpec);
 		
 		ObjectMeta myPodMetaData = new ObjectMeta();
 		myPodMetaData.setName("AnastaisaPod");
