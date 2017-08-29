@@ -53,16 +53,18 @@ public class ClusterTester {
 		Container elasticSearchContainer = new Container();
 		elasticSearchContainer.setImage("million12/elasticsearch:latest");
 		elasticSearchContainer.setName("elasticsearch-test");
+		elasticSearchContainer.setImagePullPolicy("Always");
 		podContainers.add(elasticSearchContainer);
 
 		Container nginxContainer = new Container();
 		nginxContainer.setImage("nginx");
 		nginxContainer.setName("nginx-test");
-		ContainerPort ngxContainerPort = new ContainerPort();
-		ngxContainerPort.setContainerPort(80);
-		List<ContainerPort> ngxContainerPorts = new ArrayList<ContainerPort>();
-		ngxContainerPorts.add(ngxContainerPort);
-		nginxContainer.setPorts(ngxContainerPorts);
+		nginxContainer.setImagePullPolicy("IfNotPresent");
+		//ContainerPort ngxContainerPort = new ContainerPort();
+		//ngxContainerPort.setContainerPort(80);
+		//List<ContainerPort> ngxContainerPorts = new ArrayList<ContainerPort>();
+		//ngxContainerPorts.add(ngxContainerPort);
+		//nginxContainer.setPorts(ngxContainerPorts);
 		podContainers.add(nginxContainer);
 
 		// -- POD SPEC
@@ -70,7 +72,7 @@ public class ClusterTester {
 		podSpec.setContainers(podContainers);
 
 		// --Create POD Namespace
-		ProjMayhamNamespace myPodNS = new ProjMayhamNamespace();
+		PmNamespace myPodNS = new PmNamespace();
 
 		// Setting pods attributes
 		Map<String, String> podLabels = new HashMap<String, String>();
@@ -89,7 +91,7 @@ public class ClusterTester {
 		nsMetaDataLabels.put("database", "elasticsearch");
 		nsMetaDataLabels.put("loadbalancer", "nginx");
 		myPodNSMetDat.setLabels(nsMetaDataLabels);
-		myPodNS.setMetaData(myPodNSMetDat);
+		myPodNSMetDat.setNamespace(myPodNSID);
 		myPodNS.createNamespace();
 
 		// Now for the POD
@@ -101,10 +103,10 @@ public class ClusterTester {
 		// --Create POD
 
 		ProjMayhamPod testPod = new ProjMayhamPod();
-		testPod.setKind("Pod");
+		//testPod.setKind("Pod");
 		testPod.setMetadata(myPodNSMetDat);
 		testPod.setSpec(podSpec);
-		testPod.setApiVersion(apiVersion);
+		//testPod.setApiVersion(apiVersion);
 
 		// LOG.info(testPod.toString());
 
