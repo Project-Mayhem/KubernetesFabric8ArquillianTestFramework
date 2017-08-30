@@ -61,7 +61,7 @@ public class PmService extends Service {
 	/**
 	 * Creates the defined service and deploys it.
 	 */
-	public void createThisSrv() {
+	/*public void createThisSrv() {
 		if (!(this.getMetadata()==null)) &&  {
 
 			//determine if the service is already created
@@ -74,7 +74,7 @@ public class PmService extends Service {
 	 * @param apiVer
 	 *            - The proposed service api version to set.
 	 */
-	public void setSrvApi(String apiVer) {
+	/*public void setSrvApi(String apiVer) {
 		if ((service.getApiVersion().equals(null)) && (!this.service.equals(null))) {
 			service.setApiVersion(apiVer);
 		}
@@ -87,7 +87,7 @@ public class PmService extends Service {
 	 *            - The proposed service metadata to set.
 	 */
 
-	public void setSrvObjectMetaData(ObjectMeta metadata) {
+	/*public void setSrvObjectMetaData(ObjectMeta metadata) {
 		if ((service.getMetadata().equals(null)) && (!this.service.equals(null))) {
 			this.service.setMetadata(metadata);
 		}
@@ -99,7 +99,7 @@ public class PmService extends Service {
 	 * @param -
 	 *            serviceSpec is the ServiceSpec object for the service to be set.
 	 */
-	public void setSrvServiceSpec(ServiceSpec srvSpc) {
+/*	public void setSrvServiceSpec(ServiceSpec srvSpc) {
 		if ((this.service.getSpec().equals(null)) && (!this.service.equals(null))) {
 			this.service.setSpec(srvSpc);
 		}
@@ -111,9 +111,9 @@ public class PmService extends Service {
 	 * @param srvStatus
 	 *            - sets the service status
 	 */
-	public void setSrvStatus(ServiceStatus status) {
+/*	public void setSrvStatus(ServiceStatus status) {
 		if (!this.service.equals(null)) {
 			this.service.setStatus(status);
 		}
-	}
+	}*/
 }

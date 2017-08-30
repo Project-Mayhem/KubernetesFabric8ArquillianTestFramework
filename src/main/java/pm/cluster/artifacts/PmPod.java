@@ -209,12 +209,16 @@ public class PmPod extends Pod {
 		myPodMetaData.setName("anastaisapod4");
 
 		// Set Pod's namesapce
-		if (!(PmNamespace.doesNamespaceExists(ns))) {
+		if (PmNamespace.doesNamespaceExists(ns)==false) {
+			log.info("*** creating {} namespace", ns);
 			PmNamespace myPmNs = new PmNamespace();
 			ObjectMeta myPmNsMd = new ObjectMeta();
 			myPmNsMd.setName(ns);
 			myPmNs.setMetaData(myPmNsMd);
+			myPmNs.createNamespace();
 		}
+		
+
 		myPodMetaData.setNamespace(ns);
 		myPodMetaData.setLabels(myPodLabels);
 		myPod.setMetadata(myPodMetaData);
