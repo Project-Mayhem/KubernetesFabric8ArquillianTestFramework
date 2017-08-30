@@ -13,27 +13,27 @@ import org.slf4j.LoggerFactory;
 import io.fabric8.kubernetes.api.model.Namespace;
 import io.fabric8.kubernetes.api.model.ObjectMeta;
 import io.fabric8.kubernetes.client.KubernetesClient;
-import pm.cluster.artifacts.ProjMayhamNamespace;
+import pm.cluster.artifacts.PmNamespace;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(Arquillian.class)
-public class NamespaceTests {
+public class PmNamespaceTests {
 		
-	    private static Logger LOG = LoggerFactory.getLogger(NamespaceTests.class); 
-	    private static final String kind = "Namespace";
+	    private static Logger LOG = LoggerFactory.getLogger(PmNamespaceTests.class); 
+	    private static final String kind = "testNamespace";
 
 		// Obtaining a reference to the Kubernetes client
 		@ArquillianResource
 		KubernetesClient client;
 
-		// Obtaining a reference to the Services created in this session:
+		// Obtaining a reference to the Namespaces created in this session:
 		@ArquillianResource
 		Namespace namespace;
 		
 		@Test
 		public void createNamespace() {
-			ProjMayhamNamespace myNS = new ProjMayhamNamespace();
+			PmNamespace myNS = new PmNamespace();
 			ObjectMeta nsMD = new ObjectMeta();
 			nsMD.setName("testnamespace");
 

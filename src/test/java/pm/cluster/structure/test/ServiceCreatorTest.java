@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.api.model.ServiceSpec;
 import io.fabric8.kubernetes.client.KubernetesClient;
-import pm.cluster.artifacts.ProjMayhemService;
+import pm.cluster.artifacts.PmService;
 
 
 @RunWith(Arquillian.class)
@@ -32,7 +32,7 @@ public class ServiceCreatorTest {
 		String apiVer = "1.0";
 		ServiceSpec srvSpec = null;
 		
-		Service testSrv = new ProjMayhemService();
+		Service testSrv = new PmService();
 		testSrv.setApiVersion(apiVer);
 		testSrv.setKind("Service");
 		testSrv.setApiVersion(apiVer);

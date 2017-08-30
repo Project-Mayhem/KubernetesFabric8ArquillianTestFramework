@@ -28,7 +28,7 @@ import io.fabric8.kubernetes.api.model.ReplicationController;
 import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.assertions.KubernetesAssert;
 import io.fabric8.kubernetes.client.KubernetesClient;
-import pm.cluster.artifacts.ProjMayhamPod;
+import pm.cluster.artifacts.PmPod;
 
 import static io.fabric8.kubernetes.assertions.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
@@ -130,12 +130,12 @@ public class PodCreatorTests {
 		podMetadata.setName(podName);
 		podMetadata.setLabels(podLables);
 
-		Pod myPod = new ProjMayhamPod();
+		Pod myPod = new PmPod();
 		myPod.setApiVersion(apiVersion);
 		myPod.setKind(kind);
 		myPod.setMetadata(podMetadata);
 		myPod.setSpec(podSpec);
-		((ProjMayhamPod) myPod).create();
+		((PmPod) myPod).create();
 
 		// Test that it got created:
 		PodList podList = client.pods().list();

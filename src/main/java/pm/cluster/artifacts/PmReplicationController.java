@@ -22,21 +22,21 @@ import io.fabric8.kubernetes.api.model.ReplicationControllerStatus;
  *
  */
 
-public class ProjMayhemReplicationController extends ReplicationController {
+public class PmReplicationController extends ReplicationController {
 
 	private ReplicationController repCntrl = null;
 	private static final String kubeKind = "ReplicationController";
-	private static Logger LOG = LoggerFactory.getLogger(ProjMayhemReplicationController.class);
+	private static Logger LOG = LoggerFactory.getLogger(PmReplicationController.class);
 
-	public ProjMayhemReplicationController() {
+	public PmReplicationController() {
 		this.repCntrl = new ReplicationController();
 	}
 
-	public ProjMayhemReplicationController(ReplicationController clientRepController) {
+	public PmReplicationController(ReplicationController clientRepController) {
 		this.repCntrl = clientRepController;
 	}
 
-	public ProjMayhemReplicationController(String apiVer, ObjectMeta metadata, ReplicationControllerSpec repSpec,
+	public PmReplicationController(String apiVer, ObjectMeta metadata, ReplicationControllerSpec repSpec,
 			ReplicationControllerStatus repStatus) {
 		this.repCntrl = new ReplicationController(apiVer, kubeKind, metadata, repSpec, repStatus);
 	}

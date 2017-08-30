@@ -3,8 +3,15 @@ package pm.cluster.artifacts;
 import io.fabric8.kubernetes.api.model.ObjectMeta;
 import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.api.model.ServiceBuilder;
+import io.fabric8.kubernetes.api.model.ServiceFluentImpl;
 import io.fabric8.kubernetes.api.model.ServiceSpec;
 import io.fabric8.kubernetes.api.model.ServiceStatus;
+import io.fabric8.kubernetes.api.model.StatusBuilder;
+import io.fabric8.kubernetes.client.KubernetesClient;
+import pm.cluster.utils.KubernetesConnector;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class will test the creation and validation of a Kubernetes service.
@@ -13,44 +20,51 @@ import io.fabric8.kubernetes.api.model.ServiceStatus;
  * which defines a logical set of Pods and a policy by which to access them -
  * sometimes called a micro-service.
  * 
- * The service object that gets created is encapsulated in this class and can
- * only be manipulated through the class interface. Outside of being able to
- * reset this service's status, this service is immutable.
+ * Types of Services that can be created: - clusterip - externalname -
+ * loadbalancer - nodeport
  * 
  * @author asreitz
  *
  */
 
-public class ProjMayhemServiceCreator {
+public class PmService extends Service {
 
-	private Service service = null;
-	private static String kubeKind = "Service";
+	private static final String kubeKind = "Service";
+	private static final String apiVersion = "v1";
+	private static KubernetesClient kubeCon = KubernetesConnector.getKubeClient();
+	private static Logger LOG = LoggerFactory.getLogger(PmService.class);
 
 	/**
 	 * These constructors provide 3 ways to create a mysop kubernetes service.
 	 */
 
-	public ProjMayhemServiceCreator() {
-		this.service = new Service();
+	public PmService() {
+		super();
+		this.setApiVersion(apiVersion);
+		this.setKind(kubeKind);
 	}
 
-	public ProjMayhemServiceCreator(String apiVer, ObjectMeta serviceMetadata, ServiceSpec serviceSpec,
-			ServiceStatus serviceStatus) {
-		this.service = new Service(apiVer, kubeKind, serviceMetadata, serviceSpec, serviceStatus);
+	public PmService(String apiVer, ObjectMeta serviceMetadata, ServiceSpec serviceSpec, ServiceStatus serviceStatus) {
+		super(apiVer, kubeKind, serviceMetadata, serviceSpec, serviceStatus);
 
 	}
 
-	public ProjMayhemServiceCreator(Service srv) {
-		this.service = srv;
+	public PmService(Service srv) {
+		this();
+		this.setMetadata(srv.getMetadata());
+		this.setSpec(srv.getSpec());
+		if (!(this.getStatus() == null)) {
+         this.setStatus(srv.getStatus());
+		}
 	}
 
 	/**
 	 * Creates the defined service and deploys it.
 	 */
 	public void createThisSrv() {
-		if (!this.service.equals(null)) {
-			ServiceBuilder srvBld = new ServiceBuilder(this.service);
-			srvBld.build();
+		if (!(this.getMetadata()==null)) &&  {
+
+			//determine if the service is already created
 		}
 	}
 

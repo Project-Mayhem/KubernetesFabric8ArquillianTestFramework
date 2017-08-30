@@ -1,4 +1,4 @@
-package pm.cluster.artifacts;
+package pm.cluster.utils;
 
 import io.fabric8.kubernetes.client.Config;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
@@ -21,7 +21,7 @@ public class KubernetesConnector {
 	}
 	
 	public static KubernetesClient getKubeClient() {
-		//since url is not specified, usign the default url for minikube
+		//since url is not specified, using the default url for minikube
 		return getKubeClient("https://192.168.99.100:8443");
 	}
 }

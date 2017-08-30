@@ -30,17 +30,17 @@ import io.fabric8.kubernetes.api.model.PodSpec;
 import io.fabric8.kubernetes.api.model.PodStatus;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClientException;
+import pm.cluster.utils.KubernetesConnector;
 
-public class ProjMayhamPod extends Pod {
+public class PmPod extends Pod {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	// private Pod this = null;
 	private static final String podKind = "Pod";
 	private String apiVer = "v1";
-	private static Logger log = LoggerFactory.getLogger(ProjMayhamPod.class);
+	private static Logger log = LoggerFactory.getLogger(PmPod.class);
 	public static KubernetesClient kubeCon = KubernetesConnector.getKubeClient();
 
 	/**
@@ -51,11 +51,11 @@ public class ProjMayhamPod extends Pod {
 	 * @param spec
 	 * @param status
 	 */
-	public ProjMayhamPod(String apiVersion, ObjectMeta metadata, PodSpec spec, PodStatus status) {
+	public PmPod(String apiVersion, ObjectMeta metadata, PodSpec spec, PodStatus status) {
 		super(apiVersion, podKind, metadata, spec, status);
 	}
 
-	public ProjMayhamPod(Pod myPod) {
+	public PmPod(Pod myPod) {
 		this();
 		super.setMetadata(myPod.getMetadata());
 		super.setSpec(myPod.getSpec());
@@ -63,7 +63,11 @@ public class ProjMayhamPod extends Pod {
 			super.setStatus(myPod.getStatus());
 	}
 
-	public ProjMayhamPod() {
+	/**
+	 * Must set ObjectMeta, PodSpec, and (optionally, PodStatus) when using this
+	 * constructor.
+	 */
+	public PmPod() {
 		super();
 		super.setKind(podKind);
 		super.setApiVersion(apiVer);
@@ -75,23 +79,40 @@ public class ProjMayhamPod extends Pod {
 	 */
 	public boolean create() throws KubernetesClientException {
 		boolean created = false;
-		String myNameSpace = "asreitz-test-podcreation";
 
 		if (!(this.getMetadata() == null) && (!(this.getMetadata().getName() == null))) {
-			log.info("Attempting to create pod ****");
-			if ((this.doesPodExists(this.getMetadata().getName())) == false) {
-				log.info("Creating pod " + this.getMetadata().getName());
-				// kubeCon.pods().inNamespace(myNameSpace).create(this);
-				kubeCon.pods().create(this);
 
-				List<Pod> pods = kubeCon.pods().list().getItems();
-				for (Pod pod : pods) {
-					if (pod.getMetadata().getName().equalsIgnoreCase(this.getMetadata().getName())) {
-						created = true;
-						log.info("{} pod got created", this.getMetadata().getName());
-					}
+			// determining if the pod is already created
+			String podName = this.getMetadata().getName();
+			log.info("Determining if POd already exists");
+
+			if (!(PmNamespace.doesNamespaceExists(podName))) {
+				log.info("Creating {} Pod.", podName);
+				log.info("Here is the Pod information: \nApiVersion " + this.getApiVersion() + "\nKind "
+						+ this.getKind() + "\nPodName: " + this.getMetadata().getName() + "\nNamespace : "
+						+ this.getMetadata().getNamespace());
+
+				// get Labels
+				String LabelStringList = ",";
+				Map<String, String> podLabels = new HashMap<String, String>(this.getMetadata().getLabels());
+				for (Map.Entry<String, String> entry : podLabels.entrySet()) {
+					LabelStringList += entry.getKey() + ":" + entry.getValue() + ",";
 				}
+
+				// get containers
+				String contString = ",";
+				List<Container> podConList = new ArrayList<Container>(this.getSpec().getContainers());
+				for (Container container : podConList) {
+					contString += container.getName() + ", ";
+				}
+				log.info("Labels are: " + podLabels + "\nContainers are: " + contString);
+				this.kubeCon.pods().create(this);
 			}
+
+			// verify that pod was created
+			if (this.doesPodExists(podName))
+				created = true;
+			log.info("Pod creation verified!");
 		}
 		return created;
 	}
@@ -102,15 +123,14 @@ public class ProjMayhamPod extends Pod {
 	private boolean doesPodExists(String podName) {
 		boolean exists = false;
 		List<Pod> kubePods = kubeCon.pods().list().getItems();
-		if (kubePods.contains(this)) {
-			this.log.info("The \"{}\" pod already exists; no creation needed.", podName);
-		/*
-		 * for (Pod pod : kubePods) { log.info("{} pod", pod.getMetadata().getName());
-		 * if (pod.getMetadata().getName().equalsIgnoreCase(podName)) { exists = true;
-		 * this.log.info("The \"{}\" pod already exists; no creation needed.", podName);
-		 * }
-		 */
-	}return exists;
+		for (Pod pod : kubePods) {
+			log.info("{} pod", pod.getMetadata().getName());
+			if (pod.getMetadata().getName().equalsIgnoreCase(podName)) {
+				exists = true;
+				this.log.info("The \"{}\" pod already exists; no creation needed.", podName);
+			}
+		}
+		return exists;
 
 	}
 
@@ -160,9 +180,10 @@ public class ProjMayhamPod extends Pod {
 	}
 
 	public static void main(String args[]) {
-		ProjMayhamPod myPod = new ProjMayhamPod();
+		PmPod myPod = new PmPod();
 
 		String allPodLabels = null;
+		String ns = "clustertesterforpod";
 
 		// Create pod labels for the metadata
 		Map<String, String> myPodLabels = new HashMap<String, String>();
@@ -172,17 +193,29 @@ public class ProjMayhamPod extends Pod {
 		// create pod spec with containers
 		PodSpec myPodSpec = new PodSpec();
 		Container myPodCont1 = new Container();
+		Container myPodCont2 = new Container();
 		myPodCont1.setImage("elasticsearch");
-		myPodCont1.setImagePullPolicy("IfNotPresent");
-		myPodCont1.setName("AnastasiaElasticsearch");
+		myPodCont1.setImagePullPolicy("Always");
+		myPodCont1.setName("anastasiaelasticsearch");
+		myPodCont2.setImage("mongodb");
+		myPodCont2.setName("mongodb4asreitz");
 		List<Container> cnList = new ArrayList<Container>();
 		cnList.add(myPodCont1);
+		cnList.add(myPodCont2);
 		myPodSpec.setContainers(cnList);
 		myPod.setSpec(myPodSpec);
 
 		ObjectMeta myPodMetaData = new ObjectMeta();
-		myPodMetaData.setName("AnastaisaPod");
-		myPodMetaData.setNamespace("clusterTesterforPod");
+		myPodMetaData.setName("anastaisapod4");
+
+		// Set Pod's namesapce
+		if (!(PmNamespace.doesNamespaceExists(ns))) {
+			PmNamespace myPmNs = new PmNamespace();
+			ObjectMeta myPmNsMd = new ObjectMeta();
+			myPmNsMd.setName(ns);
+			myPmNs.setMetaData(myPmNsMd);
+		}
+		myPodMetaData.setNamespace(ns);
 		myPodMetaData.setLabels(myPodLabels);
 		myPod.setMetadata(myPodMetaData);
 
@@ -190,23 +223,9 @@ public class ProjMayhamPod extends Pod {
 		System.out.println("Pod APIVersion: " + myPod.getApiVersion());
 		System.out.println("Pod Kind: " + myPod.getKind());
 
-		if ((myPod != null) && (myPod.getMetadata() != null) && myPod.getMetadata().getLabels() != null) {
-			// pull the list into a string
-			Collection<String> labelNames = myPod.getMetadata().getLabels().values();
-
-			int count = 1;
-			for (String item : labelNames) {
-				if (count == 1) {
-					allPodLabels = item;
-					count += 1;
-				} else {
-					allPodLabels += item;
-				}
-			}
-			System.out.println("Pod labels: " + allPodLabels);
+		// Now, create the Pod:
+		if (myPod.create()) {
+			System.out.println("Pod got created!");
 		}
-
-		System.out.println("Pod looks like this:  " + myPod.toString());
-
 	}
 }

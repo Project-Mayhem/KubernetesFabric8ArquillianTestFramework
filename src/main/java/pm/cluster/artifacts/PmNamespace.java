@@ -25,6 +25,7 @@ import io.fabric8.kubernetes.api.model.NamespaceStatus;
 import io.fabric8.kubernetes.api.model.ObjectMeta;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClientException;
+import pm.cluster.utils.KubernetesConnector;
 
 public class PmNamespace extends Namespace {
 
@@ -33,10 +34,9 @@ public class PmNamespace extends Namespace {
 	 */
 	private static final long serialVersionUID = -2259057698490908817L;
 	private static Logger log = LoggerFactory.getLogger(PmNamespace.class);
-	// private Namespace nasp = null;
 	public static final String kind = "Namespace";
 	private static String apiVersion = "v1";
-	KubernetesClient kubeCon = KubernetesConnector.getKubeClient();
+	private static KubernetesClient kubeCon = KubernetesConnector.getKubeClient();
 
 	/**
 	 * Instantiates a new namespace that can be customized and built through this
@@ -59,7 +59,7 @@ public class PmNamespace extends Namespace {
 	public PmNamespace(String apiVer, ObjectMeta metadata, NamespaceSpec naspSpec, NamespaceStatus naspStatus) {
 		super(apiVer, kind, metadata, naspSpec, naspStatus);
 
-		log.debug("received the follwing for this namespace: \napiVersion:" + apiVer + "\nMetaData: " + metadata
+		log.info("received the follwing for this namespace: \napiVersion:" + apiVer + "\nMetaData: " + metadata
 				+ "\namepsapce Spec" + naspSpec.toString() + "\nNamespace status" + naspStatus.getPhase());
 	}
 
@@ -85,21 +85,15 @@ public class PmNamespace extends Namespace {
 	public boolean createNamespace() throws KubernetesClientException {
 		boolean created = false;
 		if ((this.getMetadata() != null) & (this.getMetadata().getName() != null)) {
-
-			log.info((Boolean.toString(this.doesNamespaceExists(this.getMetadata().getName()))));
-			if ((this.doesNamespaceExists(this.getMetadata().getName())) == false) {
-
-				log.debug("Creating namespace " + this.getMetadata().getName());
+			String namespaceName = this.getMetadata().getName();
+			log.info("Namespace exists = " + (Boolean.toString(this.doesNamespaceExists(namespaceName)))
+					+ " so creating it.");
+			if (!(this.doesNamespaceExists(namespaceName))) {
 				kubeCon.namespaces().create(this);
 
 				// verify the creation of this namespace:
-				List<io.fabric8.kubernetes.api.model.Namespace> kubeNamespaces = kubeCon.namespaces().list().getItems();
-
-				if (kubeNamespaces.contains(this.getNamespace())) {
+				if (this.doesNamespaceExists(namespaceName))
 					created = true;
-					log.info("Created {} namespace in {} kube cluster", this.getMetadata().getName(),
-							kubeCon.getConfiguration().getMasterUrl());
-				}
 			}
 		}
 		return created;
@@ -112,18 +106,19 @@ public class PmNamespace extends Namespace {
 	 * @param ns
 	 * @return
 	 */
-	private boolean doesNamespaceExists(String ns) {
+	public static boolean doesNamespaceExists(String ns) {
 		boolean exists = false;
 
 		List<io.fabric8.kubernetes.api.model.Namespace> kubeNamespaces = kubeCon.namespaces().list().getItems();
 
-		for (io.fabric8.kubernetes.api.model.Namespace nsr : kubeNamespaces) {
+		for (Namespace nsr : kubeNamespaces) {
 			log.info("{} namespace", nsr.getMetadata().getName());
 			if (nsr.getMetadata().getName().equalsIgnoreCase(ns)) {
 				exists = true;
 				log.info("{} namespace already exists; no creation needed.", ns);
 			}
 		}
+
 		return exists;
 	}
 
@@ -162,13 +157,6 @@ public class PmNamespace extends Namespace {
 			this.setStatus(status);
 			log.info("Set namespace status");
 		}
-	}
-
-	/**
-	 * providing access to the namespace
-	 */
-	public io.fabric8.kubernetes.api.model.Namespace getNamespace() {
-		return this.getNamespace();
 	}
 
 	public static void main(String[] args) {

@@ -12,6 +12,7 @@ import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.ObjectMeta;
 import io.fabric8.kubernetes.api.model.PodSpec;
 import io.fabric8.kubernetes.client.KubernetesClient;
+import pm.cluster.utils.KubernetesConnector;
 
 public class FIOPod {
 
@@ -30,7 +31,7 @@ public class FIOPod {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		log.debug("Creating FIOPod");
-		ProjMayhamPod pod = new ProjMayhamPod();
+		PmPod pod = new PmPod();
 		
 		//Create pod labels for the metadata
 		Map<String, String> myPodLabels = new HashMap<String, String>();
