@@ -29,9 +29,6 @@ import pm.cluster.utils.KubernetesConnector;
 
 public class PmNamespace extends Namespace {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -2259057698490908817L;
 	private static Logger log = LoggerFactory.getLogger(PmNamespace.class);
 	public static final String kind = "Namespace";
