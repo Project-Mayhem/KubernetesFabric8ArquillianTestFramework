@@ -1,8 +1,5 @@
 package pm.cluster.artifacts;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
 /**
  * This class creates a Kubernetes Pod.  Once the Pod is defined, it is immutable; and
  * the only access to the pod is through this class interface.
@@ -19,6 +16,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,7 +85,7 @@ public class PmPod extends Pod {
 			String podName = this.getMetadata().getName();
 			log.info("Determining if POd already exists");
 
-			if (!(PmNamespace.doesNamespaceExists(podName))) {
+			if (!(doesPodExists(podName))) {
 				log.info("Creating {} Pod.", podName);
 				log.info("Here is the Pod information: \nApiVersion " + this.getApiVersion() + "\nKind "
 						+ this.getKind() + "\nPodName: " + this.getMetadata().getName() + "\nNamespace : "
@@ -107,12 +106,12 @@ public class PmPod extends Pod {
 				}
 				log.info("Labels are: " + podLabels + "\nContainers are: " + contString);
 				this.kubeCon.pods().create(this);
-			}
 
-			// verify that pod was created
-			if (this.doesPodExists(podName))
-				created = true;
-			log.info("Pod creation verified!");
+				// verify that pod was created
+				if (this.doesPodExists(podName))
+					created = true;
+				log.info("Pod creation verified!");
+			}
 		}
 		return created;
 	}
@@ -120,18 +119,18 @@ public class PmPod extends Pod {
 	/**
 	 * Determining if the Pod already exists:
 	 */
-	private boolean doesPodExists(String podName) {
+	public static boolean doesPodExists(String podName) {
+		log.info("{} is under investigation for existance", podName);
 		boolean exists = false;
 		List<Pod> kubePods = kubeCon.pods().list().getItems();
 		for (Pod pod : kubePods) {
 			log.info("{} pod", pod.getMetadata().getName());
-			if (pod.getMetadata().getName().equalsIgnoreCase(podName)) {
+			if ((pod.getMetadata().getName()).equalsIgnoreCase(podName)) {
 				exists = true;
-				this.log.info("The \"{}\" pod already exists; no creation needed.", podName);
+				log.info("The \"{}\" pod already exists; no creation needed.", podName);
 			}
 		}
 		return exists;
-
 	}
 
 	/**
@@ -183,7 +182,7 @@ public class PmPod extends Pod {
 		PmPod myPod = new PmPod();
 
 		String allPodLabels = null;
-		String ns = "clustertesterforpod";
+		String ns = "default";
 
 		// Create pod labels for the metadata
 		Map<String, String> myPodLabels = new HashMap<String, String>();
@@ -197,7 +196,7 @@ public class PmPod extends Pod {
 		myPodCont1.setImage("elasticsearch");
 		myPodCont1.setImagePullPolicy("Always");
 		myPodCont1.setName("anastasiaelasticsearch");
-		myPodCont2.setImage("mongodb");
+		myPodCont2.setImage("mongo");
 		myPodCont2.setName("mongodb4asreitz");
 		List<Container> cnList = new ArrayList<Container>();
 		cnList.add(myPodCont1);
@@ -206,10 +205,10 @@ public class PmPod extends Pod {
 		myPod.setSpec(myPodSpec);
 
 		ObjectMeta myPodMetaData = new ObjectMeta();
-		myPodMetaData.setName("anastaisapod4");
+		myPodMetaData.setName("anastaisapod43");
 
 		// Set Pod's namesapce
-		if (PmNamespace.doesNamespaceExists(ns)==false) {
+		if (PmNamespace.doesNamespaceExists(ns) == false) {
 			log.info("*** creating {} namespace", ns);
 			PmNamespace myPmNs = new PmNamespace();
 			ObjectMeta myPmNsMd = new ObjectMeta();
@@ -217,7 +216,6 @@ public class PmPod extends Pod {
 			myPmNs.setMetaData(myPmNsMd);
 			myPmNs.createNamespace();
 		}
-		
 
 		myPodMetaData.setNamespace(ns);
 		myPodMetaData.setLabels(myPodLabels);

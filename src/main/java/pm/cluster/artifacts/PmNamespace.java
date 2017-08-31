@@ -84,7 +84,7 @@ public class PmNamespace extends Namespace {
 	 */
 	public boolean createNamespace() throws KubernetesClientException {
 		boolean created = false;
-		if ((this.getMetadata() != null) & (this.getMetadata().getName() != null)) {
+		if ((this.getMetadata() != null) && (this.getMetadata().getName() != null)) {
 			String namespaceName = this.getMetadata().getName();
 			log.info("Namespace exists = " + (Boolean.toString(this.doesNamespaceExists(namespaceName)))
 					+ " so creating it.");
