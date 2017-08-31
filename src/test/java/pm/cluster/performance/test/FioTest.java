@@ -28,6 +28,10 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.fabric8.kubernetes.api.model.PersistentVolumeClaim;
+import io.fabric8.kubernetes.api.model.PersistentVolumeClaimSpec;
+import io.fabric8.kubernetes.api.model.PersistentVolumeClaimSpecBuilder;
+import io.fabric8.kubernetes.api.model.ResourceRequirements;
 import io.fabric8.kubernetes.client.KubernetesClient;
 
 @RunWith(Arquillian.class)
@@ -61,13 +65,26 @@ exec /usr/bin/fio $FIO_JOB_FILE --status-interval ${STATUS_INTERVAL} --output ${
  *
  */
 public class FioTest {
-	
-	public static final Long ONEHUNDERED_GB = new Long("1000000000");
+	public static final String apiVersion = "v1";
+	public static final String ONE_GB = "10GB";
+	public static final String ONEHUNDERED_GB = "100GB";
 	private static Logger fioTestLog = LoggerFactory.getLogger(FioTest.class); 
 	
 	@ArquillianResource
 	KubernetesClient client;
 
+	public void setup() {
+		PersistentVolumeClaim claim = new PersistentVolumeClaim();
+		claim.setApiVersion(apiVersion);
+		claim.setKind("standard");
+		PersistentVolumeClaimSpec spec = new PersistentVolumeClaimSpec();
+		spec.setVolumeName("testVolume");
+		ResourceRequirements r = new ResourceRequirements();
+		
+		claim.setSpec(spec);
+		
+	}
+	
 	/**
 	 * Checks to see if the expected persistent volume exists - the pod should have a
 	 * 100GB volume available at /data

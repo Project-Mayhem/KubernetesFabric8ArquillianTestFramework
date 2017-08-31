@@ -2,12 +2,15 @@ package pm.cluster.artifacts;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.fabric8.kubernetes.api.model.ConfigMapBuilder;
 import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.ObjectMeta;
 import io.fabric8.kubernetes.api.model.PodSpec;
@@ -49,14 +52,23 @@ public class FIOPod {
 		podSpec.setContainers(cnList);
 		pod.setSpec(podSpec);
 		
+		// Create the pod metadata
 		ObjectMeta myPodMetaData = new ObjectMeta();
 		myPodMetaData.setName("fio-test-pod");
 		myPodMetaData.setNamespace("default");
 		myPodMetaData.setLabels(myPodLabels);
 		pod.setMetadata(myPodMetaData);
+		
+		
+		Map<String, String> m = new HashMap<String, String>();
+		
+		
+		// Create the pod
 		Boolean created = pod.create();
 		if(!created) 
 			log.error("No pod created!");
 		log.debug("Namespaces: " + kubeCon.getNamespace());
 	}
+	
+	
 }
