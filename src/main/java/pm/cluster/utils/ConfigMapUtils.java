@@ -9,33 +9,31 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.fabric8.kubernetes.api.model.ConfigMap;
+import pm.cluster.utils.exceptions.ConfigMapUtilsException;
 
-public class PodUtils {
+public class ConfigMapUtils {
 
-	private static Logger log = LoggerFactory.getLogger(PodUtils.class);
+	private static Logger log = LoggerFactory.getLogger(ConfigMapUtils.class);
 	
 	/**
-	 * Creates a configMap for use by a pod from a properties file
+	 * Creates a HashMap from a properties file
 	 * @param filename
-	 * @return ConfigMap
+	 * @return Map
 	 */
-	public static ConfigMap properties2ConfigMap(String filename) throws Exception {
+	public static Map<String,String> properties2Map(String filename) throws ConfigMapUtilsException {
 		log.debug("Begin properties2ConfigMap["+filename+"]");
 		Properties properties = new Properties();
 		Map<String, String> propmap = new HashMap<String, String>();
 		//load propertyfile from classpath
-		try (InputStream stream = PodUtils.class.getResourceAsStream(filename)) {
+		try (InputStream stream = ConfigMapUtils.class.getResourceAsStream(filename)) {
 			properties.load(stream);
 		    for (String key : properties.stringPropertyNames()) {
 			    String value = properties.getProperty(key);
 			    propmap.put(key, value);
-			}
-		    ConfigMap m = new ConfigMap();
-		    m.setData(propmap);
-		    return m;
+			} 
+		    return propmap;
 		} catch (IOException e) {
-			throw new Exception("Unable to read property file [" + filename + "]");
+			throw new ConfigMapUtilsException("Unable to read property file [" + filename + "]",e);
 		}
 	}
 }

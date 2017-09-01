@@ -1,7 +1,8 @@
 import java.io.File;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pm.artifacts.unittests.PmNamespaceTests;
+
+import pm.cluster.artifacts.PmNamespaceTests;
 
 public class FIOTestRunner {
 	

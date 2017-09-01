@@ -1,4 +1,4 @@
-package pm.artifacts.unittests;
+package pm.cluster.artifacts;
 
 
 import static org.junit.Assert.assertTrue;
