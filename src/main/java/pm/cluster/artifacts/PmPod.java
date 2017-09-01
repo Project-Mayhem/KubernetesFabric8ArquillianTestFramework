@@ -205,7 +205,7 @@ public class PmPod extends Pod {
 		myPod.setSpec(myPodSpec);
 
 		ObjectMeta myPodMetaData = new ObjectMeta();
-		myPodMetaData.setName("anastaisapod43");
+		myPodMetaData.setName("tomasmunson");
 
 		// Set Pod's namesapce
 		if (PmNamespace.doesNamespaceExists(ns) == false) {
