@@ -1,4 +1,4 @@
-package pm.artifacts.unittests;
+package pm.cluster.artifacts;
 
 import java.util.ArrayList;
 import java.util.HashMap;

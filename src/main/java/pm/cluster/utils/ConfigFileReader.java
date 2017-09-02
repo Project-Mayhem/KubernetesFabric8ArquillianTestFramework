@@ -3,21 +3,20 @@ package pm.cluster.utils;
 import java.io.BufferedReader;
 /**
  * Reads configuration properties from config file located in project resource directory.
+ * @author Anastasia
  */
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.ArrayList;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import pm.cluster.performance.test.FioTest;
 
 public class ConfigFileReader {
 
@@ -32,23 +31,34 @@ public class ConfigFileReader {
 			BufferedReader reader = new BufferedReader(new FileReader(configFile));
 			while (reader.ready()) {
 				String line = reader.readLine();
+				List<String> stringValues = new ArrayList<String>();
 				// parsing line into map
 				String[] lineValues = line.split(separator);
-				String[] values = lineValues[1].split(valuesSeparator);
-				List<String> stringValues = new ArrayList<String>();
+				if (line.contains(valuesSeparator)) {
+					String[] values = lineValues[1].split(valuesSeparator);
 
-				for (String newValue : values) {
-					stringValues.add(newValue);
+					for (String newValue : values) {
+						fileReaderLog.info("{} is the newValue", newValue);
+						stringValues.add(newValue);
+					}
+				} else {
+					fileReaderLog.info("{} is the lineValue", lineValues[1]);
+					stringValues.add(lineValues[1]);
 				}
 				fileConfigs.put(lineValues[0], stringValues);
 			}
 			// See what did we create by iterating through the values of this map
-			
-			for(Entry<String, List<String>> aMap: fileConfigs.entrySet()) {
-				//put list of values into a string
-				String entryValues=null;
-				for(String entry: aMap.getValue()) {
-					entryValues += entry;
+
+			for (Entry<String, List<String>> aMap : fileConfigs.entrySet()) {
+				// put list of values into a string
+				String entryValues = null;
+				int counter = 1;
+				for (String entry : aMap.getValue()) {
+					if (counter != 1) {
+						entryValues += entry;
+					} else {
+						entryValues = entry;
+					}
 				}
 				fileReaderLog.info("Key {} with values {}", aMap.getKey(), entryValues);
 			}
@@ -64,5 +74,6 @@ public class ConfigFileReader {
 	public static void main(String[] args) {
 		ConfigFileReader myReader = new ConfigFileReader();
 		myReader.readConfigFile("fiotest.config");
+		myReader.readConfigFile("persistentVolume.config");
 	}
 }

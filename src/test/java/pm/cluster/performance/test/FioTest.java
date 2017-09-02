@@ -19,6 +19,9 @@ package pm.cluster.performance.test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -28,7 +31,17 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.fabric8.kubernetes.api.model.Container;
+import io.fabric8.kubernetes.api.model.ObjectMeta;
+import io.fabric8.kubernetes.api.model.PersistentVolumeClaim;
+import io.fabric8.kubernetes.api.model.PersistentVolumeClaimSpec;
+import io.fabric8.kubernetes.api.model.PersistentVolumeClaimSpecBuilder;
+import io.fabric8.kubernetes.api.model.PodSpec;
+import io.fabric8.kubernetes.api.model.ResourceRequirements;
 import io.fabric8.kubernetes.client.KubernetesClient;
+import pm.cluster.artifacts.PmPod;
+import pm.cluster.utils.ConfigMapUtils;
+import pm.cluster.utils.KubernetesConnector;
 
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -61,16 +74,31 @@ exec /usr/bin/fio $FIO_JOB_FILE --status-interval ${STATUS_INTERVAL} --output ${
  *
  */
 public class FioTest {
-	
-	public static final Long ONEHUNDERED_GB = new Long("1000000000");
-	private static Logger fioTestLog = LoggerFactory.getLogger(FioTest.class); 
+	public static final String apiVersion = "v1";
+	public static final String ONE_MB = "1MB";
+	public static final String ONE_GB = "1GB";
+	public static final String ONEHUNDERED_GB = "100GB";
+	private static Logger log = LoggerFactory.getLogger(FioTest.class); 
+	public static KubernetesClient kubeCon = KubernetesConnector.getKubeClient();
 	
 	@ArquillianResource
 	KubernetesClient client;
 
+	public void setup() {
+		PersistentVolumeClaim claim = new PersistentVolumeClaim();
+		claim.setApiVersion(apiVersion);
+		claim.setKind("standard");
+		PersistentVolumeClaimSpec spec = new PersistentVolumeClaimSpec();
+		spec.setVolumeName("testVolume");
+		ResourceRequirements r = new ResourceRequirements();
+		
+		claim.setSpec(spec);
+		
+	}
+	
 	/**
 	 * Checks to see if the expected persistent volume exists - the pod should have a
-	 * 100GB volume available at /data
+	 * 1MB volume available at /data
 	 */
 	@Test
 	public void testPersistentVolumeExists() throws Exception{
@@ -80,6 +108,48 @@ public class FioTest {
 		if(!data.isDirectory())
 			throw new Exception("Location not a directory");
 		totalSpace = data.getTotalSpace();
-		assertThat(totalSpace).isEqualByComparingTo(ONEHUNDERED_GB);
+		assertThat(totalSpace).isEqualByComparingTo(1000000l);
+	}
+	
+	@Test
+	public void testBuildFioPod() throws Exception {
+		// TODO Auto-generated method stub
+		log.debug("Begin testBuildFioPod");
+		
+		//according to k8s, have to create configMap separate from, and before a pod starts.
+		Map<String,String> rand4krw = ConfigMapUtils.properties2Map("/fiotest.config");
+		
+		//Create pod
+		PmPod pod = new PmPod();
+		/** 
+		 * @Todo  Move below into PMPod?
+		 */
+		pod.setSpec(new PodSpec());
+		pod.setMetadata(new ObjectMeta());
+		pod.getMetadata().setLabels(new HashMap<String,String>());
+		pod.getSpec().setContainers(new ArrayList<Container>());
+		
+		// Create the pod metadata
+		pod.getMetadata().setName("fio4krandrw-test-pod");
+		pod.getMetadata().setNamespace("default");
+		
+		//Create pod labels for the metadata
+		pod.getMetadata().getLabels().put("test","pm");
+		pod.getMetadata().getLabels().put("developer","testHarness");
+		
+		//Create container
+		Container fio4krandrw = new Container();
+		fio4krandrw.setImage("datawiseio/fio4krandrw:v0.3");
+		fio4krandrw.setImagePullPolicy("IfNotPresent");
+		fio4krandrw.setName("fio4krandrw");
+		
+		//Add container to podSpec
+		pod.getSpec().getContainers().add(fio4krandrw);
+		
+		// Create the pod
+		Boolean created = pod.create();
+		if(!created) 
+			log.error("No pod created!");
+		log.debug("Namespaces: " + kubeCon.getNamespace());
 	}
 }
