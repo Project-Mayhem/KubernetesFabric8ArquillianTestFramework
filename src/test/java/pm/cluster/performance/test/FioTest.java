@@ -35,10 +35,11 @@ import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.ObjectMeta;
 import io.fabric8.kubernetes.api.model.PersistentVolumeClaim;
 import io.fabric8.kubernetes.api.model.PersistentVolumeClaimSpec;
-import io.fabric8.kubernetes.api.model.PersistentVolumeClaimSpecBuilder;
 import io.fabric8.kubernetes.api.model.PodSpec;
 import io.fabric8.kubernetes.api.model.ResourceRequirements;
+import io.fabric8.kubernetes.api.model.VolumeMount;
 import io.fabric8.kubernetes.client.KubernetesClient;
+import pm.cluster.artifacts.PMConfigMap;
 import pm.cluster.artifacts.PmPod;
 import pm.cluster.utils.ConfigMapUtils;
 import pm.cluster.utils.KubernetesConnector;
@@ -78,11 +79,17 @@ public class FioTest {
 	public static final String ONE_MB = "1MB";
 	public static final String ONE_GB = "1GB";
 	public static final String ONEHUNDERED_GB = "100GB";
+	public static final String namespace = "default";
+	
 	private static Logger log = LoggerFactory.getLogger(FioTest.class); 
 	public static KubernetesClient kubeCon = KubernetesConnector.getKubeClient();
 	
 	@ArquillianResource
 	KubernetesClient client;
+	
+	private String subpath = "/data";  // path in the container
+	private String mountPath = "/data"; //path on the host
+	private String confVolumeMountName = "fio-configmap-volume-mount";
 
 	public void setup() {
 		PersistentVolumeClaim claim = new PersistentVolumeClaim();
@@ -117,8 +124,11 @@ public class FioTest {
 		log.debug("Begin testBuildFioPod");
 		
 		//according to k8s, have to create configMap separate from, and before a pod starts.
-		Map<String,String> rand4krw = ConfigMapUtils.properties2Map("/fiotest.config");
+		Map<String,String> rand4krw = ConfigMapUtils.properties2Map("/fio4krandrw.properties");
 		
+		// Create the configMap
+		PMConfigMap conf = new PMConfigMap("/fio4krandrw.properties", "fio4krandrw", namespace);
+		VolumeMount confVolumeMount = new VolumeMount(mountPath,confVolumeMountName,true,subpath);
 		//Create pod
 		PmPod pod = new PmPod();
 		/** 
@@ -139,9 +149,11 @@ public class FioTest {
 		
 		//Create container
 		Container fio4krandrw = new Container();
+		fio4krandrw.setVolumeMounts(new ArrayList<VolumeMount>());
 		fio4krandrw.setImage("datawiseio/fio4krandrw:v0.3");
 		fio4krandrw.setImagePullPolicy("IfNotPresent");
-		fio4krandrw.setName("fio4krandrw");
+		fio4krandrw.setName("fio4krandrw");	
+		fio4krandrw.getVolumeMounts().add(confVolumeMount);
 		
 		//Add container to podSpec
 		pod.getSpec().getContainers().add(fio4krandrw);
