@@ -1,0 +1,15 @@
+kind: Pod
+apiVersion: v1
+metadata:
+  name: fiopodtester
+spec:
+  containers:
+     - name: testfio
+       image: datawiseio/fio
+       volumeMounts:
+       - mountPath: "/data/fio/tests"
+         name: fiopathmount
+  volumes:
+    - name: fiopathmount
+      persistentVolumeClaim:
+       claimName: fioClaim

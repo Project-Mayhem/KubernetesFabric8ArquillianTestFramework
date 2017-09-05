@@ -146,6 +146,13 @@ public class PmPod extends Pod {
 	}
 
 	/**
+	 * Convenience method to set pod spec for storage specifics
+	 */
+	public void setPodSepc(PodSpec pdSpec) {
+		this.setPodSepc(pdSpec);
+	}
+
+	/**
 	 * The client can only set the Pod's metadata if it isn't already set.
 	 * 
 	 * @param metadata
@@ -178,6 +185,8 @@ public class PmPod extends Pod {
 		return podPrint;
 	}
 
+	
+	//quick testing:
 	public static void main(String args[]) {
 		PmPod myPod = new PmPod();
 
