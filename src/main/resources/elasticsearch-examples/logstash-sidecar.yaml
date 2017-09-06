@@ -1,0 +1,22 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: someApp
+  labels:
+    component: logstash
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        component: logstash
+    spec:
+      containers:
+      - name: logstash-sidecar
+        image: logstash/logstash:5.5.2
+        env: 
+        
+      # logstash reads configs from /etc/logstash/conf.d
+      
+     
+     
