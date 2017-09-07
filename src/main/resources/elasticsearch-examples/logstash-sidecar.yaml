@@ -1,7 +1,8 @@
-apiVersion: apps/v1beta1
+# Logstash deployment that only deploys the sidecar.  This is for testing.
+apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: someApp
+  name: logstash-sidecar
   labels:
     component: logstash
 spec:
@@ -13,10 +14,24 @@ spec:
     spec:
       containers:
       - name: logstash-sidecar
-        image: logstash/logstash:5.5.2
-        env: 
-        
-      # logstash reads configs from /etc/logstash/conf.d
-      
+        image: docker.elastic.co/logstash/logstash:5.5.2
+        volumeMounts:
+        - name: logstash-conf
+          mountPath: /usr/share/logstash/pipeline
+        - name: logstash-yaml
+          mountPath: /usr/share/logstash/config
+      volumes:
+      - name: logstash-conf
+        configMap:
+          name: logstash-configmap
+          items:
+          - key: logstash.conf
+            path: logstash.conf
+      - name: logstash-yaml
+        configMap:
+          name: logstash-configmap
+          items:
+          - key: logstash.yml
+            path: logstash.yml    
      
      

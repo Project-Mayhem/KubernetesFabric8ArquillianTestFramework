@@ -27,7 +27,7 @@ spec:
           #  cpu: 100m
         env:
           - name: "kibana_elasticsearch_url"
-            value: "http://elasticsearch-service:9200"
+            value: "http://elasticsearch:9200"
           # when using a "-proxy" image, the following is not required
           #- name: "kibana_base_url"
           #  value: "/api/v1/proxy/namespaces/default/services/kibana-logging"
