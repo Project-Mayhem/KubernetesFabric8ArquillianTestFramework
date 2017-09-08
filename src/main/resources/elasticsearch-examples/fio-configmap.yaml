@@ -1,5 +1,14 @@
 apiVersion: v1
 data:
+  start.sh: |-
+    #!/bin/sh
+    echo "Running fio job"
+    /usr/bin/fio /config/job.fio --output-format=json
+    echo "Done"
+    echo "install curl"
+    apt-get install -yq curl
+    echo "Executing curl"
+    curl http://elasticsearch:9200/
   job.fio: |-
     [global]
     ioengine=libaio

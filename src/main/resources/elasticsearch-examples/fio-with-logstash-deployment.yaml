@@ -21,7 +21,8 @@ spec:
           mountPath: "/data"
         - name: fio-configmap
           mountPath: "/config"    
-        command: ["/usr/bin/fio","/config/job.fio","--output-format=json","--output=/data/test.json"]
+        #command: ["/usr/bin/fio","/config/job.fio","--output-format=json"]
+        command: ["/bin/sh","-c","chmod u+x /config/start.sh; /config/start.sh -f /config/job.fio"]
       # Logstash sidecar
       - name: logstash-sidecar
         image: docker.elastic.co/logstash/logstash:5.5.2
@@ -43,6 +44,8 @@ spec:
           items:
           - key: job.fio
             path: job.fio
+          - key: start.sh
+            path: start.sh
       - name: logstash-conf
         configMap:
           name: logstash-configmap
