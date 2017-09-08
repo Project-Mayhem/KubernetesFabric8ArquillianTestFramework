@@ -1,0 +1,13 @@
+# Persistent Volume - created within the minikube VM and persists across reboots
+# https://github.com/kubernetes/minikube/blob/master/docs/persistent_volumes.md
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv0002
+spec:
+  accessModes:
+    - ReadWriteOnce
+  capacity:
+    storage: 1Gi
+  hostPath:
+    path: /data/pv0002/

@@ -1,15 +1,59 @@
-kind: Pod
-apiVersion: v1
+# Logstash deployment that only deploys the sidecar.  This is for testing.
+apiVersion: batch/v1
+kind: Job
 metadata:
-  name: fiopodtester
+  name: fio-w-logstash-sidecar
+  labels:
+    component: fio-with-logstash
 spec:
-  containers:
-     - name: testfio
-       image: datawiseio/fio
-       volumeMounts:
-       - mountPath: "/data/fio/tests"
-         name: fiopathmount
-  volumes:
-    - name: fiopathmount
-      persistentVolumeClaim:
-       claimName: fioClaim
+  #replicas: 1
+  template:
+    metadata:
+      labels:
+        component: fio-with-logstash
+    spec:
+      containers:
+      # Fio Tester
+      - name: fio-test
+        image: datawiseio/fio
+        volumeMounts:
+        - name: fio-test-data-volume 
+          mountPath: "/data"
+        - name: fio-configmap
+          mountPath: "/config"    
+        command: ["/usr/bin/fio","/config/job.fio","--output-format=json","--output=/data/test.json"]
+      # Logstash sidecar
+      - name: logstash-sidecar
+        image: docker.elastic.co/logstash/logstash:5.5.2
+        volumeMounts:
+        - name: fio-test-data-volume 
+          mountPath: "/data"
+        - name: logstash-conf
+          mountPath: /usr/share/logstash/pipeline
+        - name: logstash-yaml
+          mountPath: /usr/share/logstash/config
+      restartPolicy: Never
+      volumes:
+      - name: fio-test-data-volume
+        persistentVolumeClaim:
+         claimName: fio-test-pvc
+      - name: fio-configmap
+        configMap:
+          name: fio-configmap
+          items:
+          - key: job.fio
+            path: job.fio
+      - name: logstash-conf
+        configMap:
+          name: logstash-configmap
+          items:
+          - key: logstash.conf
+            path: logstash.conf
+      - name: logstash-yaml
+        configMap:
+          name: logstash-configmap
+          items:
+          - key: logstash.yml
+            path: logstash.yml    
+     
+  
