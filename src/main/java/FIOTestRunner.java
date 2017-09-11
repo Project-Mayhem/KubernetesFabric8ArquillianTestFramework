@@ -40,7 +40,7 @@ public class FIOTestRunner {
 		String imageName = "datawiseio/fio";
 		String podName = "fioTest";
 		int numberOfRuns = 4;
-		String pvVolClaim = "pvcTester1";
+		String pvVolClaim = "pvcTester12";
 
 		int count = 0;
 		while (count < 4) {

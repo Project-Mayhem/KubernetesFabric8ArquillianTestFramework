@@ -25,6 +25,7 @@ import io.fabric8.kubernetes.api.model.NamespaceStatus;
 import io.fabric8.kubernetes.api.model.ObjectMeta;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClientException;
+import pm.cluster.utils.ConfigFileReader;
 import pm.cluster.utils.KubernetesConnector;
 
 public class PmNamespace extends Namespace {
@@ -43,6 +44,46 @@ public class PmNamespace extends Namespace {
 		super();
 		super.setApiVersion(this.apiVersion);
 		super.setKind(kind);
+	}
+
+	/**
+	 * @param name
+	 *            The name for this namespace
+	 */
+	public PmNamespace(String name, Map<String, String> nsLabels) {
+		this();
+		ObjectMeta metadata = new ObjectMeta();
+		metadata.setName(name);
+		if (!(nsLabels == null)) {
+			metadata.setLabels(nsLabels);
+		}
+		this.setMetaData(metadata);
+	}
+
+	/**
+	 * Builds a namespace with values from a config file
+	 */
+	public PmNamespace(String configFile) {
+		Map<String, String> labelRequest = new HashMap<String, String>();
+		ConfigFileReader fileReader = new ConfigFileReader();
+		Map<String, List<String>> nsConfigs = fileReader.readConfigFile(configFile);
+		ObjectMeta metadata = new ObjectMeta();
+		
+		if (nsConfigs.containsKey("nsLabels")) {
+			List<String> labels = nsConfigs.get("nsLabels");
+			for (String label : labels) {
+				String[] labelentry = label.split(":");
+				log.info("adding {} label", labelentry[0] + " "+ labelentry[1]);
+				labelRequest.put(labelentry[0].trim(), labelentry[1].trim());
+			}
+			metadata.setLabels(labelRequest);
+		}
+		// setting the namespace name:
+		List<String> nameList = nsConfigs.get("name");
+		// pulling only the first entry; only need one name
+		log.info("the pv name is {}",nameList.get(0));
+		metadata.setName(nameList.get(0));
+		this.setMetaData(metadata);
 	}
 
 	/**
@@ -157,8 +198,8 @@ public class PmNamespace extends Namespace {
 	}
 
 	public static void main(String[] args) {
-		PmNamespace myNS = new PmNamespace();
-		ObjectMeta nsMD = new ObjectMeta();
+		PmNamespace myNS = new PmNamespace("namespace.config");
+		/*ObjectMeta nsMD = new ObjectMeta();
 		nsMD.setName("larougenamespace");
 
 		// adding labels:
@@ -166,7 +207,7 @@ public class PmNamespace extends Namespace {
 		nsLabels.put("nsType", "elasticsearch");
 		nsLabels.put("nsreason", "test");
 		nsMD.setLabels(nsLabels);
-		myNS.setMetaData(nsMD);
+		myNS.setMetaData(nsMD);*/
 		myNS.createNamespace();
 	}
 }
