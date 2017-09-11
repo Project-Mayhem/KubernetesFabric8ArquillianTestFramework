@@ -2,7 +2,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: fio-w-logstash-sidecar
+  name: fio-with-logstash-sidecar-job
   labels:
     component: fio-with-logstash
 spec:
@@ -22,7 +22,7 @@ spec:
         - name: fio-configmap
           mountPath: "/config"    
         #command: ["/usr/bin/fio","/config/job.fio","--output-format=json"]
-        command: ["/bin/sh","-c","chmod u+x /config/start.sh; /config/start.sh -f /config/job.fio"]
+        command: ["/bin/sh","-c","chmod u+x /config/start.sh; /config/start.sh"]
       # Logstash sidecar
       - name: logstash-sidecar
         image: docker.elastic.co/logstash/logstash:5.5.2

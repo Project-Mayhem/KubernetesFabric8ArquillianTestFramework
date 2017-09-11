@@ -7,17 +7,28 @@ data:
         interval => 10
         type => "heartbeat"
       }
-      file { 
-        path => "/data/*.log"
-        start_position => "beginning"
-      } 
+      # use the exec plugin to cat the output of the file to the json codec.  This lets us make the entire contents 
+      # of the file into a single ES event
+      exec{
+        command => "cat /data/test.json; sudo rm -rf /data/*.data; sudo rm -rf /data/test.json"
+        codec => json
+        # run command once a minute
+        interval => 60
+      }
+      #file { 
+      #  path => "/data/*.log"
+      #  start_position => "beginning"
+      #} 
     }
     output {
       elasticsearch { 
         hosts => ["elasticsearch:9200"] 
         index => "logstash-fiotest"
       }
-      stdout { codec => rubydebug }
+      #exec {
+      #  command => "sudo /config/cleanup.sh"
+      #}
+      #stdout { codec => rubydebug }
     }
   logstash.yml: |-
     ## Default Logstash configuration from logstash-docker.
@@ -33,6 +44,10 @@ data:
     ##     https://www.elastic.co/guide/en/x-pack/current/installing-xpack.html#xpack-enabling
     #
     xpack.monitoring.enabled: false
+  cleanup.sh: |-
+    #!/bin/sh
+    rm -rf /data/test.json
+    pkill java
 kind: ConfigMap
 metadata:
   name: logstash-configmap
