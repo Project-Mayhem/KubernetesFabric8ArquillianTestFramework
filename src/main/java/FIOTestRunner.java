@@ -14,6 +14,8 @@ import io.fabric8.kubernetes.api.model.PodSpec;
 import io.fabric8.kubernetes.api.model.Volume;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import pm.cluster.artifacts.PmNamespace;
+import pm.cluster.artifacts.PmPersistentVolume;
+import pm.cluster.artifacts.PmPersistentVolumeClaim;
 import pm.cluster.artifacts.PmPod;
 import pm.cluster.utils.KubernetesConnector;
 
@@ -27,70 +29,28 @@ public class FIOTestRunner {
 	public static final String configFileName = "fiotest.config";
 
 	private static Logger trLog = LoggerFactory.getLogger(FIOTestRunner.class);
-	private ClassLoader classLoader = getClass().getClassLoader();
-	private File configFile = new File(classLoader.getResource(configFileName).getFile());
 	private static KubernetesClient kubeCon = KubernetesConnector.getKubeClient();
 
 	public void runTest() {
+		String perVolConfig = "persistenVolume.config";
+		String perVolClaimConfig = "persistentVolumeClaim.config";
 
+		PmPersistentVolume psVol = new PmPersistentVolume(perVolConfig);
+		if (psVol.createPersistentVolume())
+			trLog.info("{} persistent volume was created", psVol.getMetadata().getName());
+
+		PmPersistentVolumeClaim psVolClaim = new PmPersistentVolumeClaim(perVolClaimConfig);
+		if (psVolClaim.createPersistentVolumeClaim())
+			trLog.info("{} persistent volume claim was created", psVolClaim.getMetadata().getName());
+
+		// Create a test namespace for the test resources
+		String nsConfig = "namespace.config";
+		PmNamespace testNs = new PmNamespace(nsConfig);
+		if (testNs.createNamespace())
+			trLog.info("{} namesapce was created", testNs.getMetadata().getName());
+
+		//Create the test Pod in the namespace
 		PmPod myPod = new PmPod();
-
-		String allPodLabels = null;
-		String ns = "default";
-		String imageName = "datawiseio/fio";
-		String podName = "fioTest";
-		int numberOfRuns = 4;
-		String pvVolClaim = "pvcTester12";
-
-		int count = 0;
-		while (count < 4) {
-			// Create pod labels for the metadata
-			Map<String, String> myPodLabels = new HashMap<String, String>();
-			myPodLabels.put("test", "myspo");
-			myPodLabels.put("type", "fio");
-
-			// create pod spec with containers
-			PodSpec myPodSpec = new PodSpec();
-			Container myPodCont1 = new Container();
-			
-			myPodCont1.setImage(imageName);
-			myPodCont1.setImagePullPolicy("Always");
-			myPodCont1.setName(podName + count);
-
-			List<Container> cnList = new ArrayList<Container>();
-			cnList.add(myPodCont1);
-			myPodSpec.setContainers(cnList);
-			
-			//Set PersistentVolumes
-			List<Volume> volumes = new ArrayList<Volume>();
-			Volume podVolCl = new Volume();
-			podVolCl.setName("teststorage" + count);
-			PersistentVolumeClaimVolumeSource volSrc = new PersistentVolumeClaimVolumeSource();
-			kubeCon.persistentVolumeClaims().load(url);
-			kubeCon.persistentVolumeClaims().lo
-			podVolCl.setPersistentVolumeClaim(pvcTester1);
-			
-			myPodSpec.setVolumes(volumes);
-			
-			myPod.setSpec(myPodSpec);
-
-			ObjectMeta myPodMetaData = new ObjectMeta();
-			myPodMetaData.setName();
-
-			// Set Pod's namesapce
-			if (PmNamespace.doesNamespaceExists(ns) == false) {
-				trLog.info("*** creating {} namespace", ns);
-				PmNamespace myPmNs = new PmNamespace();
-				ObjectMeta myPmNsMd = new ObjectMeta();
-				myPmNsMd.setName(ns);
-				myPmNs.setMetaData(myPmNsMd);
-				myPmNs.createNamespace();
-			}
-
-			myPodMetaData.setNamespace(ns);
-			myPodMetaData.setLabels(myPodLabels);
-			myPod.setMetadata(myPodMetaData);
-		}
 
 	}
 
