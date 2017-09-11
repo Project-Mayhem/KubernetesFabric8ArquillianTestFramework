@@ -251,6 +251,7 @@ public class PmPersistentVolumeClaim extends PersistentVolumeClaim {
 		pvc.createPersistentVolumeClaim(); */
 		String confsFileName="persistentVolumeClaim.config";
 		PmPersistentVolumeClaim pvc = new PmPersistentVolumeClaim(confsFileName);
+		pvc.createPersistentVolumeClaim();
 
 	}
 }
