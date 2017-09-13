@@ -1,0 +1,17 @@
+kind: Pod
+apiVersion: v1
+metadata:
+  name: fiotestmars
+spec:
+  containers:
+    - name: areitzfio
+      image: datawiseio/fio
+      command: ["/usr/bin/fio /Users/Anastasia/fioTEsts/fiotestcase1 --output /data/test1resultsYeah.out"]
+      volumeMounts:
+      - mountPath: "/data/"
+        name: containertestpath
+  volumes:
+    - name: containertestpath
+      persistentVolumeClaim:
+        claimName: testClaim
+        
