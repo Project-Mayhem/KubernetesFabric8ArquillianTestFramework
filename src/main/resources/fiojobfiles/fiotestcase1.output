@@ -1,0 +1,21 @@
+        valid values: read       Sequential read
+                    : write      Sequential write
+                    : trim       Sequential trim
+                    : randread   Random read
+                    : randwrite  Random write
+                    : randtrim   Random trim
+                    : rw         Sequential read and write mix
+                    : readwrite  Sequential read and write mix
+                    : randrw     Random read and write mix
+                    : trimwrite  Trim and write mix, trims preceding writes
+
+fio: failed parsing readwrite=random
+Bad option <inflate-log>
+Bad option <randomrepeat=1>
+Did you mean randrepeat?
+Bad option <rwmixedread=75>
+Did you mean rwmixread?
+Bad option <outputformat=json>
+Bad option <bandwidth-log>
+Bad option <debug=all>
+fio: job test2_4KB-random dropped

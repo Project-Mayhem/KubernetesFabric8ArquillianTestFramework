@@ -141,6 +141,12 @@ public class PmPersistentVolume extends PersistentVolume {
 					for (String labelEntry : labelList) {
 						String[] set = labelEntry.split(":");
 						pvLabels.put(set[0].trim(), set[1].trim());
+						if(this.getMetadata()==null) {
+							ObjectMeta mt = new ObjectMeta();
+							this.setMetadata(mt);
+						}
+						this.getMetadata().setLabels(pvLabels);
+						break;
 					}
 				}
 			}
@@ -261,7 +267,7 @@ public class PmPersistentVolume extends PersistentVolume {
 		boolean exists = false;
 
 		List<PersistentVolume> kubeVolumeList = kubeCon.persistentVolumes().list().getItems();
-		if (kubeVolumeList != null) {
+		if (!kubeVolumeList.isEmpty()) {
 			for (PersistentVolume kubeVolume : kubeVolumeList) {
 				if ((kubeVolume.getMetadata().getName()).equalsIgnoreCase(volName)) {
 					pvLog.info("{} volume exists", volName);

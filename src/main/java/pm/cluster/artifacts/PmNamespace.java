@@ -68,12 +68,12 @@ public class PmNamespace extends Namespace {
 		ConfigFileReader fileReader = new ConfigFileReader();
 		Map<String, List<String>> nsConfigs = fileReader.readConfigFile(configFile);
 		ObjectMeta metadata = new ObjectMeta();
-		
+
 		if (nsConfigs.containsKey("nsLabels")) {
 			List<String> labels = nsConfigs.get("nsLabels");
 			for (String label : labels) {
 				String[] labelentry = label.split(":");
-				log.info("adding {} label", labelentry[0] + " "+ labelentry[1]);
+				log.info("adding {} label", labelentry[0] + " " + labelentry[1]);
 				labelRequest.put(labelentry[0].trim(), labelentry[1].trim());
 			}
 			metadata.setLabels(labelRequest);
@@ -81,7 +81,7 @@ public class PmNamespace extends Namespace {
 		// setting the namespace name:
 		List<String> nameList = nsConfigs.get("name");
 		// pulling only the first entry; only need one name
-		log.info("the pv name is {}",nameList.get(0));
+		log.info("the pv name is {}", nameList.get(0));
 		metadata.setName(nameList.get(0));
 		this.setMetaData(metadata);
 	}
@@ -147,16 +147,16 @@ public class PmNamespace extends Namespace {
 	public static boolean doesNamespaceExists(String ns) {
 		boolean exists = false;
 
-		List<io.fabric8.kubernetes.api.model.Namespace> kubeNamespaces = kubeCon.namespaces().list().getItems();
-
-		for (Namespace nsr : kubeNamespaces) {
-			log.info("{} namespace", nsr.getMetadata().getName());
-			if (nsr.getMetadata().getName().equalsIgnoreCase(ns)) {
-				exists = true;
-				log.info("{} namespace already exists; no creation needed.", ns);
+		List<Namespace> kubeNamespaces = kubeCon.namespaces().list().getItems();
+		if (!kubeNamespaces.isEmpty()) {
+			for (Namespace nsr : kubeNamespaces) {
+				log.info("{} namespace", nsr.getMetadata().getName());
+				if (nsr.getMetadata().getName().equalsIgnoreCase(ns)) {
+					exists = true;
+					log.info("{} namespace already exists; no creation needed.", ns);
+				}
 			}
 		}
-
 		return exists;
 	}
 
@@ -170,6 +170,19 @@ public class PmNamespace extends Namespace {
 			log.info("Setting the {} metadata: ", metaData.getName());
 			this.setMetadata(metaData);
 		}
+	}
+	
+	/**
+	 * Sets this namesapce's name.
+	 * @param name
+	 */
+
+	public void setNsName(String name) {
+		if (this.getMetadata() == null) {
+			ObjectMeta mtdt = new ObjectMeta();
+			this.setMetadata(mtdt);
+		}
+		this.getMetadata().setName(name);
 	}
 
 	/**
@@ -199,15 +212,13 @@ public class PmNamespace extends Namespace {
 
 	public static void main(String[] args) {
 		PmNamespace myNS = new PmNamespace("namespace.config");
-		/*ObjectMeta nsMD = new ObjectMeta();
-		nsMD.setName("larougenamespace");
-
-		// adding labels:
-		Map<String, String> nsLabels = new HashMap<String, String>();
-		nsLabels.put("nsType", "elasticsearch");
-		nsLabels.put("nsreason", "test");
-		nsMD.setLabels(nsLabels);
-		myNS.setMetaData(nsMD);*/
+		/*
+		 * ObjectMeta nsMD = new ObjectMeta(); nsMD.setName("larougenamespace");
+		 * 
+		 * // adding labels: Map<String, String> nsLabels = new HashMap<String,
+		 * String>(); nsLabels.put("nsType", "elasticsearch"); nsLabels.put("nsreason",
+		 * "test"); nsMD.setLabels(nsLabels); myNS.setMetaData(nsMD);
+		 */
 		myNS.createNamespace();
 	}
 }

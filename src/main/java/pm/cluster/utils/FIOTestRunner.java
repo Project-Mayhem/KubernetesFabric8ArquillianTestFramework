@@ -1,23 +1,13 @@
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+package pm.cluster.utils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.fabric8.kubernetes.api.model.Container;
-import io.fabric8.kubernetes.api.model.ObjectMeta;
-import io.fabric8.kubernetes.api.model.PersistentVolumeClaimVolumeSource;
-import io.fabric8.kubernetes.api.model.PodSpec;
-import io.fabric8.kubernetes.api.model.Volume;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import pm.cluster.artifacts.PmNamespace;
 import pm.cluster.artifacts.PmPersistentVolume;
 import pm.cluster.artifacts.PmPersistentVolumeClaim;
 import pm.cluster.artifacts.PmPod;
-import pm.cluster.utils.KubernetesConnector;
 
 public class FIOTestRunner {
 
@@ -27,12 +17,11 @@ public class FIOTestRunner {
 	 */
 
 	public static final String configFileName = "fiotest.config";
-
 	private static Logger trLog = LoggerFactory.getLogger(FIOTestRunner.class);
 	private static KubernetesClient kubeCon = KubernetesConnector.getKubeClient();
 
 	public void runTest() {
-		String perVolConfig = "persistenVolume.config";
+		String perVolConfig = "persistentVolume.config";
 		String perVolClaimConfig = "persistentVolumeClaim.config";
 
 		PmPersistentVolume psVol = new PmPersistentVolume(perVolConfig);
@@ -49,8 +38,18 @@ public class FIOTestRunner {
 		if (testNs.createNamespace())
 			trLog.info("{} namesapce was created", testNs.getMetadata().getName());
 
-		//Create the test Pod in the namespace
-		PmPod myPod = new PmPod();
+		// Create the test Pod in the namespace
+		String podConfig = "pods.config";
+		PmPod myPod = new PmPod(podConfig);
+		if (myPod.create())
+			trLog.info("{} pod got created ", myPod.getMetadata().getName());
+
+	}
+
+	public static void main(String[] args) {
+
+		FIOTestRunner runner = new FIOTestRunner();
+		runner.runTest();
 
 	}
 

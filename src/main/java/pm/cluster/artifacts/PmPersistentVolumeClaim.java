@@ -216,7 +216,6 @@ public class PmPersistentVolumeClaim extends PersistentVolumeClaim {
 					pvcLog.info("{} is the capcity", qt);
 				}
 				this.getMetadata().setNamespace("default");
-				;
 				kubeCon.persistentVolumeClaims().create(this);
 			}
 		}
