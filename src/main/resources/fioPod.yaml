@@ -1,15 +1,40 @@
 kind: Pod
 apiVersion: v1
 metadata:
-  name: fiopodtester
+  name: fiopodtester12
 spec:
   containers:
      - name: testfio
        image: datawiseio/fio
        volumeMounts:
-       - mountPath: "/data/fio/tests"
+       - mountPath: "/data"
          name: fiopathmount
+       env:
+       - name: FIO_JOB_FILE
+         value: "/config/job.fio"
+       - name: JOB_NAME
+         value: "fiotestJob1"
+       - name: NJ
+         value: "1"
+       - name: QD
+         value: "8"
+       - name: BLOCK_SIZE
+         value: "4K"
+       - name: DEV
+         value: "/data/fiotestJob1.results"
+       - name: DIRECT
+         value: "0"
+       - name: SIZE
+         value: "5g"
+       - name: RW
+         value: "randwrite"
+       - name: RT
+         value: "40"
   volumes:
     - name: fiopathmount
       persistentVolumeClaim:
-       claimName: fioClaim
+       claimName: homeupgradepvc
+       
+       
+
+       

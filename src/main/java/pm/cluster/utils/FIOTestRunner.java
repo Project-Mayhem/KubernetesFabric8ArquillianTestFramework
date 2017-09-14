@@ -43,6 +43,11 @@ public class FIOTestRunner {
 		PmPod myPod = new PmPod(podConfig);
 		if (myPod.create())
 			trLog.info("{} pod got created ", myPod.getMetadata().getName());
+		
+		String fioPodConf = "fioPod.config";
+		PmPod fioPod = new PmPod(fioPodConf);
+		if(fioPod.create())
+			trLog.info("{} pod got created",fioPod.getMetadata().getName());
 
 	}
 

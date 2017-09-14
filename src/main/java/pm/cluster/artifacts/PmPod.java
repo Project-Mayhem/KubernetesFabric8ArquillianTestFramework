@@ -22,11 +22,17 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.dockerjava.api.model.Volumes;
+
 import io.fabric8.kubernetes.api.model.Container;
+import io.fabric8.kubernetes.api.model.EnvVar;
 import io.fabric8.kubernetes.api.model.ObjectMeta;
+import io.fabric8.kubernetes.api.model.PersistentVolumeClaimVolumeSource;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.PodSpec;
 import io.fabric8.kubernetes.api.model.PodStatus;
+import io.fabric8.kubernetes.api.model.Volume;
+import io.fabric8.kubernetes.api.model.VolumeMount;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClientException;
 import pm.cluster.utils.ConfigFileReader;
@@ -140,17 +146,58 @@ public class PmPod extends Pod {
 					}
 					this.getMetadata().setNamespace(namespace);
 					break;
+				case "containerVolumeMount":
+					List<String> volmountsList = config.getValue();
+					String mnt = volmountsList.get(0);
+					// split the vol name from the path
+					String[] volPair = mnt.split(":");
+					log.info("{} is the volume name and {} is the volume's path", volPair[0], volPair[1]);
+
+					List<VolumeMount> containerVolMntList = new ArrayList<VolumeMount>();
+					VolumeMount vol = new VolumeMount();
+					vol.setMountPath(volPair[1]);
+					vol.setName(volPair[0]);
+					containerVolMntList.add(vol);
+					this.getSpec().getContainers().get(0).setVolumeMounts(containerVolMntList);
+				case "envars":
+					List<String> envarList = config.getValue();
+					List<EnvVar> envVars = new ArrayList<EnvVar>(0);
+					
+					for (String envPair : envarList) {
+						String[] pair = envPair.split(":");
+						EnvVar var = new EnvVar();
+						log.info("*******{} is the name with {} value",pair[0],pair[1]);
+						var.setName(pair[0]);
+						var.setValue(pair[1]);
+						envVars.add(var);
+					}
+					this.getSpec().getContainers().get(0).setEnv(envVars);
+				case "pvcClaim":
+					List<String> volumePtdata = config.getValue();
+					String pvcdata = volumePtdata.get(0);
+					String[] pvcPathNameAndClaimName = pvcdata.split(":");
+					log.info("****{} is the path name and \n {} is the pvclaim name", pvcPathNameAndClaimName[0],
+							pvcPathNameAndClaimName[1]);
+					Volume pathVol = new Volume();
+					pathVol.setName(pvcPathNameAndClaimName[0]);
+					pathVol.setPersistentVolumeClaim(
+							new PersistentVolumeClaimVolumeSource(pvcPathNameAndClaimName[1], false));
+					List<Volume> vols = new ArrayList<Volume>();
+					vols.add(pathVol);
+					this.getSpec().setVolumes(vols);
+					break;
 				}
 			}
+			log.info("The pod's data is this:\n" + this.getApiVersion() + " api version\n" + this.getKind() + " kind\n"
+					+ this.getMetadata().getName() + " name\n" + this.getPodSpec().getContainers().get(0).getImage()
+					+ "is the image");
+			this.create();
 		} else
 
 		{
 			log.info("Config file has not been provided; no configs available!");
 		}
-		log.info("The pod's data is this:\n" + this.getApiVersion() + " api version\n" + this.getKind() + " kind\n"
-				+ this.getMetadata().getName() + " name\n" + this.getPodSpec().getContainers().get(0).getImage()
-				+ "is the image");
-		this.create();
+		
 	}
 
 	/**
