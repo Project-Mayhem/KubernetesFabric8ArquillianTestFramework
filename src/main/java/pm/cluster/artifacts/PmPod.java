@@ -159,10 +159,10 @@ public class PmPod extends Pod {
 					vol.setName(volPair[0]);
 					containerVolMntList.add(vol);
 					this.getSpec().getContainers().get(0).setVolumeMounts(containerVolMntList);
-				case "envars":
+				case "envvars":
 					List<String> envarList = config.getValue();
 					List<EnvVar> envVars = new ArrayList<EnvVar>(0);
-					
+					log.info("{} size of the list", envarList.size());
 					for (String envPair : envarList) {
 						String[] pair = envPair.split(":");
 						EnvVar var = new EnvVar();
@@ -171,6 +171,8 @@ public class PmPod extends Pod {
 						var.setValue(pair[1]);
 						envVars.add(var);
 					}
+					log.info("{} is the number of variables set!****",envVars.size());
+					//log.info("@@@@{} is the container's name",this.getSpec().getContainers().get(0).getName());
 					this.getSpec().getContainers().get(0).setEnv(envVars);
 				case "pvcClaim":
 					List<String> volumePtdata = config.getValue();
