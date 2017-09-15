@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,33 +33,30 @@ public class ConfigFileReader {
 				List<String> stringValues = new ArrayList<String>();
 				// parsing line into map
 				String[] lineValues = line.split(separator);
-				if (line.contains(valuesSeparator)) {
-					String[] values = lineValues[1].split(valuesSeparator);
+				String key = lineValues[0];
+				String value = lineValues[1];
 
-					for (String newValue : values) {
-						fileReaderLog.info("{} is the newValue", newValue);
-						stringValues.add(newValue);
+				List<String> listValues = new ArrayList<String>();
+				if (value.contains(valuesSeparator)) {
+					String[] values = value.split(valuesSeparator);
+					for (String listEntry : values) {
+						fileReaderLog.info("adding to list: " + key + ":" + listEntry);
+						listValues.add(listEntry);
 					}
+					fileConfigs.put(key, listValues);
 				} else {
-					fileReaderLog.info("{} is the lineValue", lineValues[1]);
-					stringValues.add(lineValues[1]);
+					listValues.add(value);
+					fileConfigs.put(key, listValues);
 				}
-				fileConfigs.put(lineValues[0], stringValues);
 			}
-			// See what did we create by iterating through the values of this map
-
-			for (Entry<String, List<String>> aMap : fileConfigs.entrySet()) {
-				// put list of values into a string
-				String entryValues = null;
-				int counter = 1;
-				for (String entry : aMap.getValue()) {
-					if (counter != 1) {
-						entryValues += entry;
-					} else {
-						entryValues = entry;
-					}
+			fileReaderLog.info("Here is what the config file says:\n");
+			int count = 1;
+			for (Map.Entry<String, List<String>> entry : fileConfigs.entrySet()) {
+				fileReaderLog.info("Entry " + count++ + "key: " + entry.getKey() + " with these values:");
+				List<String> receivedValues = entry.getValue();
+				for (String val : receivedValues) {
+					fileReaderLog.info(val);
 				}
-				fileReaderLog.info("Key {} with values {}", aMap.getKey(), entryValues);
 			}
 		} catch (FileNotFoundException e) {
 			fileReaderLog.error("Can't find " + configFileName + " file", e.getStackTrace());
@@ -73,7 +69,8 @@ public class ConfigFileReader {
 
 	public static void main(String[] args) {
 		ConfigFileReader myReader = new ConfigFileReader();
-		myReader.readConfigFile("fiotest.config");
-		myReader.readConfigFile("persistentVolume.config");
+		// myReader.readConfigFile("fiotest.config");
+		// myReader.readConfigFile("persistentVolume.config");
+		myReader.readConfigFile("persistentVolumeNFS.config");
 	}
 }

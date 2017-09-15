@@ -22,6 +22,7 @@ import io.fabric8.kubernetes.api.model.PersistentVolumeClaimSpec;
 import io.fabric8.kubernetes.api.model.Quantity;
 import io.fabric8.kubernetes.api.model.ResourceRequirements;
 import io.fabric8.kubernetes.client.KubernetesClient;
+import pm.cluster.utils.ConfigFileReader;
 import pm.cluster.utils.KubernetesConnector;
 
 public class PmPersistentVolumeClaim extends PersistentVolumeClaim {
@@ -30,6 +31,7 @@ public class PmPersistentVolumeClaim extends PersistentVolumeClaim {
 	public static final String kind = "PersistentVolumeClaim";
 	private static final String apiVersion = "v1";
 	private static KubernetesClient kubeCon = KubernetesConnector.getKubeClient();
+	private Map<String, List<String>> configs = null;
 
 	/**
 	 * Convenience constructors:
@@ -41,17 +43,67 @@ public class PmPersistentVolumeClaim extends PersistentVolumeClaim {
 		this.setApiVersion(apiVersion);
 	}
 
-	public PmPersistentVolumeClaim(String name) {
-		this();
-		ObjectMeta metadata = new ObjectMeta();
-		metadata.setName(name);
-		this.setMetadata(metadata);
+	public PmPersistentVolumeClaim(String configFileName) {
+		ConfigFileReader confReader = new ConfigFileReader();
+		this.configs = confReader.readConfigFile(configFileName);
+		this.mapConfigs();
 	}
 
 	public PmPersistentVolumeClaim(ObjectMeta metadata, PersistentVolumeClaimSpec spec) {
 		this();
 		this.setMetadata(metadata);
 		this.setSpec(spec);
+	}
+
+	private void mapConfigs() {
+		Map<String, Quantity> resourceRequests = new HashMap<String, Quantity>();
+		String provisioner = null, hostDir = null, storageClassName = null, reclaimPolicy = null;
+		List<String> accessModesList = new ArrayList<String>();
+		Map<String, String> pvLabels = new HashMap<String, String>();
+
+		if (!(this.configs == null)) {
+			for (Map.Entry<String, List<String>> config : configs.entrySet()) {
+				switch (config.getKey()) {
+				case "name":
+					List<String> name = config.getValue();
+					this.setPVCName(name.get(0).trim()); // Only pulling the first name; only need one!
+					break;
+				case "resources": // may be a list of resources
+					List<String> resourcesList = config.getValue();
+					for (String resource : resourcesList) {
+						String[] resReqs = resource.split(":");
+						pvcLog.debug("key value is : ", resReqs[0]);
+						pvcLog.debug("value is : ", resReqs[1]);
+						resourceRequests.put(resReqs[0].trim(), new Quantity(resReqs[1].trim()));
+					}
+					break;
+				case "storageClassName": // only one; pulling first one
+					List<String> storageClassNameList = config.getValue();
+					storageClassName = storageClassNameList.get(0).trim();
+					break;
+				case "accessModes": // can be multiple
+					accessModesList = config.getValue();
+					break;
+				case "labels":
+					List<String> labelList = config.getValue();
+					for (String labelEntry : labelList) {
+						String[] set = labelEntry.split(":");
+						pvLabels.put(set[0].trim(), set[1].trim());
+						if (this.getMetadata() == null) {
+							ObjectMeta mtdt = new ObjectMeta();
+							this.setMetadata(mtdt);
+						}
+						this.getMetadata().setLabels(pvLabels);
+						break;
+					}
+				}
+			}
+		} else {
+			pvcLog.info("Config file has not been provided; no configs available!");
+		}
+
+		this.setPvcSpec(storageClassName, accessModesList, resourceRequests);
+
 	}
 
 	/**
@@ -71,19 +123,29 @@ public class PmPersistentVolumeClaim extends PersistentVolumeClaim {
 	 * @param accessModes
 	 * @param capacity
 	 */
-	public void setPvcSpec(String storageclassname, List<String> accessModes, Map<String, Quantity> capacity,
-			String specName) {
+	// public void setPvcSpec(String storageclassname, List<String> accessModes,
+	// String typeReq, String capacity) {
+	public void setPvcSpec(String storageclassname, List<String> accessModes, Map<String, Quantity> resources) {
+		PersistentVolumeClaimSpec specpv = null;
+
 		if (this.getSpec() == null) {
-			PersistentVolumeClaimSpec specpv = new PersistentVolumeClaimSpec();
+			specpv = new PersistentVolumeClaimSpec();
 			this.setSpec(specpv);
 		}
-		this.getSpec().setVolumeName(specName);
-		this.getSpec().setAccessModes(accessModes);
-		this.getSpec().setAdditionalProperty("storageClassName", storageclassname);
 
+		// set the access mode
+		this.getSpec().setAccessModes(accessModes);
+
+		// set the storage requests
+		// Map<String, Quantity> storageReq = new HashMap<String, Quantity>();
+		// storageReq.put(typeReq, new Quantity(capacity));
 		ResourceRequirements resReq = new ResourceRequirements();
-		resReq.setLimits(capacity);
+		resReq.setRequests(resources);
 		this.getSpec().setResources(resReq);
+		this.setSpec(specpv);
+
+		pvcLog.info("" + this.getMetadata().getName() + "\nAPI Version: " + this.getApiVersion() + "\nKibnd: "
+				+ this.getKind() + "\n  " + this.getSpec());
 	}
 
 	/**
@@ -143,18 +205,17 @@ public class PmPersistentVolumeClaim extends PersistentVolumeClaim {
 			if (!(this.doesPVClaimExists(this.getMetadata().getName()))) {
 				pvcLog.info("The PVC looks like this: " + "\napiVerion: " + this.getApiVersion() + "\nkind: "
 						+ this.getKind() + "\nName:" + this.getMetadata().getName() + "\nVolume Name: "
-						+ this.getSpec().getVolumeName() +
-						"\nnamespace: " + this.getMetadata().getNamespace());
-				
+						+ this.getSpec().getVolumeName() + "\nnamespace: " + this.getMetadata().getNamespace());
+
 				List<String> accesses = this.getSpec().getAccessModes();
-				for(String access: accesses) {
+				for (String access : accesses) {
 					pvcLog.info("{} access: ", access);
 				}
-				Map<String,Quantity> qtList = new HashMap<String,Quantity>();
-				for(Map.Entry<String,Quantity> qt: qtList.entrySet()) {
-				pvcLog.info("{} is the capcity", qt);
+				Map<String, Quantity> qtList = new HashMap<String, Quantity>();
+				for (Map.Entry<String, Quantity> qt : qtList.entrySet()) {
+					pvcLog.info("{} is the capcity", qt);
 				}
-
+				this.getMetadata().setNamespace("default");
 				kubeCon.persistentVolumeClaims().create(this);
 			}
 		}
@@ -171,21 +232,24 @@ public class PmPersistentVolumeClaim extends PersistentVolumeClaim {
 
 	// quick test
 	public static void main(String args[]) {
-
-		String pvcName = "testPvcClaim1";
-		String storageClassName = "manual";
-		String namespace = "default";
-		String specName = "pvcTester1";
-
+/*
+		String storageClassName = "standard";
+		String claimName = "anastasiapvclaim130claim";
+		String resourceReqType = "storage";
+		String storageCapacityValue = "13Gi";
 		List<String> accessModes = new ArrayList<String>();
 		accessModes.add("ReadWriteMany");
 
 		Map<String, Quantity> capacity = new HashMap<String, Quantity>();
-		capacity.put("storage", new Quantity("3GI"));
+		capacity.put("storage", new Quantity(storageCapacityValue));
 
-		PmPersistentVolumeClaim pvc = new PmPersistentVolumeClaim(pvcName);
-		pvc.setPvcSpec(storageClassName, accessModes, capacity, specName);
-		pvc.getMetadata().setNamespace(namespace);
+		// PmPersistentVolumeClaim pvc = new PmPersistentVolumeClaim(pvcName);
+		PmPersistentVolumeClaim pvc = new PmPersistentVolumeClaim();
+		pvc.setPVCName(claimName);
+		pvc.setPvcSpec(storageClassName, accessModes, resourceReqType, storageCapacityValue);
+		pvc.createPersistentVolumeClaim(); */
+		String confsFileName="persistentVolumeClaim.config";
+		PmPersistentVolumeClaim pvc = new PmPersistentVolumeClaim(confsFileName);
 		pvc.createPersistentVolumeClaim();
 
 	}
