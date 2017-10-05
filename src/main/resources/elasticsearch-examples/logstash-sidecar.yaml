@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: logstash-sidecar
-        image: docker.elastic.co/logstash/logstash:5.5.2
+        image: docker.elastic.co/logstash/logstash:5.6.1
         volumeMounts:
         - name: logstash-conf
           mountPath: /usr/share/logstash/pipeline
@@ -32,6 +32,4 @@ spec:
           name: logstash-configmap
           items:
           - key: logstash.yml
-            path: logstash.yml    
-     
-     
+            path: logstash.yml

@@ -1,25 +1,28 @@
 # Deployment
-apiVersion: apps/v1beta1
+apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: es
   labels:
     component: elasticsearch
+    app: elk
 spec:
   replicas: 1
   template:
     metadata:
       labels:
         component: elasticsearch
+        app: elk
     spec:
       serviceAccount: elasticsearch
       containers:
       - name: es
         securityContext:
-          capabilities:
-            add:
-              - IPC_LOCK
-        image: quay.io/pires/docker-elasticsearch-kubernetes:5.5.2
+          #capabilities:
+          #  add:
+          #    - IPC_LOCK
+        image: quay.io/pires/docker-elasticsearch-kubernetes:5.6.1
+        imagePullPolicy: IfNotPresent
         env:
         - name: KUBERNETES_CA_CERTIFICATE_FILE
           value: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
@@ -51,5 +54,3 @@ spec:
       - name: storage
         persistentVolumeClaim:
           claimName: elasticsearch-data
-          
-          

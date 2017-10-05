@@ -3,49 +3,24 @@ data:
   start.sh: |-
     #!/bin/sh
     echo "Cleaning up first"
-    rm -rf /data/*.*
+    rm -rf /storage/*.*
     echo "Running fio job"
-    /usr/bin/fio /config/job.fio --output=/data/test.json --output-format=json
-    #echo "Done"
-    #echo "install curl"
-    #apt-get install -yq curl
-    #echo "Executing curl"
-    #curl http://elasticsearch:9200/
+    /usr/bin/fio /config/job.fio --output=/storage/test.json --output-format=json
+    sleep 5m
   job.fio: |-
     [global]
     ioengine=libaio
-    rw=rw
-    numjobs=1
+    rw=randwrite
+    numjobs=8
     direct=1
     bs=4k
-    filename=/data/4krandrw1.data
-    runtime=10
+    filename=/data/4krandrw1_100g.data
+    runtime=1000
     time_based=1
-    iodepth=1
-    size=1m
-    # group_reporting
+    iodepth=8
+    size=100g
+    #gtod_reduce=1
     [randwritejob]
-    rw=randwrite
-    # The most basic form of data verification. Write the device randomly
-    # in 4K chunks, then read it back and verify the contents.
-    #[write-and-verify]
-    #rw=randwrite
-    #bs=4k
-    #direct=1
-    #ioengine=libaio
-    #iodepth=1
-    #verify=crc32c
-    # Use /dev/XXX. For running this on a file instead, remove the filename
-    # option and add a size=32G (or whatever file size you want) instead.
-    filename=/data/test-verify.data
-    [write-fio-4k-para]
-    stonewall
-    filename=/data/4kpara-write.data
-    rw=write
-    write_bw_log=4k-write.results
-    write_iops_log=4k-write.results
-    write_lat_log=4k-write.results
 kind: ConfigMap
 metadata:
   name: fio-configmap
-  namespace: default

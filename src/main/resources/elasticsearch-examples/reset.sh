@@ -1,22 +1,34 @@
 #!/bin/bash
 
-kubectl replace configmaps logstash-configmap -f logstash-configmap.yaml
+oc project meadowgate
+
+oc delete pvc --all
+
+oc create -f fio-pvc-ceph.yaml
+
+oc replace configmaps logstash-configmap -f logstash-configmap.yaml
 if [ $? -gt 1 ] ; then
-  kubectl create -f logstash-configmap.yaml
+  oc create -f logstash-configmap.yaml
 fi
 
-kubectl replace configmaps fio-configmap -f fio-configmap.yaml
+oc replace configmaps fio-configmap -f fio-configmap.yaml
 if [ $? -gt 1 ] ; then
-  kubectl create -f fio-configmap.yaml
+  oc create -f fio-configmap.yaml
 fi
 
-kubectl delete jobs fio-with-logstash-sidecar-job
+oc delete deployments fio-with-logstash-sidecar-deployment
 
-kubectl create -f fio-with-logstash-sidecar-job.yaml
+oc delete deployments fio-deployment
+
+oc create -f fio-deployment.yaml 
+
+#oc create -f fio-with-logstash-sidecar-deployment.yaml
 
 sleep 3
 
-kubectl get pods
+oc get pods
+
+
 
 
 

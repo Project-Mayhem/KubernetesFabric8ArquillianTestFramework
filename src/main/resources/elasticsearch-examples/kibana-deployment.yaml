@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
       - name: kibana-logging
-        image: emacski/k8s-kibana:latest
+        image: emacski/k8s-kibana:5.6.1
         resources:
           # keep request = limit to keep this container in guaranteed class
           #limits:

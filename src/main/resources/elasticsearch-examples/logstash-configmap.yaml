@@ -9,8 +9,16 @@ data:
       }
       # use the exec plugin to cat the output of the file to the json codec.  This lets us make the entire contents 
       # of the file into a single ES event
+      # no sudo in this pod!
+      file {
+          path => "/data/test.json"
+          start_position => "beginning"
+          tags => ["fio","test"]
+          codec => json
+          sincedb_path => "/data/.sincedb"
+      }
       exec{
-        command => "cat /data/test.json; sudo rm -rf /data/*.data; sudo rm -rf /data/test.json"
+        command => "cat /data/test.json; sudo rm -rf /data/*.*"
         codec => json
         # run command once a minute
         interval => 60
@@ -51,4 +59,3 @@ data:
 kind: ConfigMap
 metadata:
   name: logstash-configmap
-  namespace: default

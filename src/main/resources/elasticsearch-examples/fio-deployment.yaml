@@ -1,0 +1,42 @@
+# Logstash deployment that only deploys the sidecar.  This is for testing.
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: fio-deployment
+  labels:
+    component: fio-deployment
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        component: fio
+    spec:
+      containers:
+      # Fio Tester
+      - name: fio-test
+        image: datawiseio/fio
+        env:
+        - name: DEV
+          value: /data/4krandrw1_100g.data
+        volumeMounts:
+        - name: fio-test-data-volume 
+          mountPath: "/data"
+        - name: fio-configmap
+          mountPath: "/config"    
+          # by default, container entrypoint reads job.fio from /config/
+          # command: ["/bin/sh","-c","chmod u+x /config/start.sh; /config/start.sh"]
+      volumes:
+      - name: fio-test-data-volume
+        persistentVolumeClaim:
+         claimName: fio-test-pvc-ceph
+      - name: fio-configmap
+        configMap:
+          name: fio-configmap
+          items:
+          - key: job.fio
+            path: job.fio
+          - key: start.sh
+            path: start.sh
+     
+  
